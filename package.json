@@ -1,0 +1,24 @@
+{
+  "name": "gs-build-tools",
+  "version": "1.0.0",
+  "scripts": {
+	"build": "tsx ./src/main.ts -c",
+	"install": "tsx ./src/main.ts -i",
+	"test:hello": "vitest run hello"
+  },
+  "dependencies": {
+	"gs-base": "^0.1.20"
+  },
+  "devDependencies": {
+	"@rollup/plugin-node-resolve": "^16.0.1",
+	"esbuild": "0.25.9",
+	"rollup-plugin-copy": "^3.5.0",
+	"rollup-plugin-dts": "^6.2.3",
+	"rollup-plugin-esbuild": "^6.2.1",
+	"typescript": "^5.9.3",
+	"vitest": "^3.2.4",
+	"rollup": "^4.50.1",
+	"tsx": "^4.21.0"
+  },
+  "type": "module"
+}
