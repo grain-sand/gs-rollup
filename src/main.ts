@@ -2,17 +2,17 @@
 
 import {join, resolve} from "node:path";
 import {existsSync} from "node:fs";
-import {normalizeArgs} from "./fn/normalizeArgs";
-import {getConfigArg} from "./fn/getConfigArg";
-import {stripConfig} from "./fn/stripConfig";
-import {spawnRollup} from "./fn/spawnRollup";
-import {runProgrammaticDefault} from "./fn/runProgrammaticDefault";
-import {initProject} from "./fn/initProject";
+import {normalizeArgs} from "./main-fn/normalizeArgs";
+import {getConfigArg} from "./main-fn/getConfigArg";
+import {stripConfig} from "./main-fn/stripConfig";
+import {spawnRollup} from "./main-fn/spawnRollup";
+import {runProgrammaticDefault} from "./main-fn/runProgrammaticDefault";
+import {initProject} from "./main-fn/initProject";
 
 
 /* ================= 主流程 ================= */
 
-async function main() {
+export async function main() {
 
 	const args = normalizeArgs(process.argv.slice(2));
 	const has = (f: string) => args.includes(f);
