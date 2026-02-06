@@ -1,4 +1,4 @@
-import {ExternalOption, InputOption, OutputOptions, Plugin} from "rollup";
+import {ExternalOption, InputOption, ModuleFormat, Plugin} from "rollup";
 
 export interface IDefineArg {
 	input?: InputOption
@@ -7,7 +7,7 @@ export interface IDefineArg {
 }
 
 export interface IDefineOutputArg extends IDefineArg {
-	format: OutputOptions['format']
+	format: ModuleFormat
 }
 
 export interface IDefineJsArg extends IDefineArg {
