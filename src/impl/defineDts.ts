@@ -1,4 +1,4 @@
-import {OutputOptions, RollupOptions} from "rollup";
+import {RollupOptions} from "rollup";
 import dts from "rollup-plugin-dts";
 import {IDefineDtsArg} from "../type";
 import {DefaultValues} from "./DefaultValues";
@@ -10,8 +10,8 @@ export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 	const {
 		external = DefaultValues.external,
 		exclude = 'test/**/*.ts',
-		dir = DefaultValues.fullCodeDir,
-		copyMd = true
+		copyMd = true,
+		output
 	} = arg || {}
 	const inputs = formatInput(arg);
 	const plugins = arg?.plugins || [];
@@ -25,7 +25,7 @@ export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 			input,
 			external,
 			plugins,
-			output: defineOutput(file, {format: 'esm', extension: '.d.ts'})
+			output: output || defineOutput(file, {format: 'esm', extension: '.d.ts'})
 		})
 	}
 	return result;

@@ -17,14 +17,24 @@ const moduleFormatExt: Record<ModuleFormat, string> = {
 };
 
 export function defineOutput(file: string, arg: IDefineOutputOption): OutputOptions {
-	let {format, extension = moduleFormatExt[format], dir = DefaultValues.fullCodeDir, other} = arg;
+	let {
+		other, format,
+		extension = moduleFormatExt[format],
+		outputCodeDir = DefaultValues.codeDir,
+		outputBase = DefaultValues.outputBase
+	} = arg;
+	if (outputBase) {
+		outputCodeDir = join(outputBase, outputCodeDir);
+	}
 	if (!extension.startsWith('.')) {
 		extension = `.${extension}`;
 	}
-	if (dir) {
-		file = join(dir, file);
+	if (outputCodeDir) {
+		file = join(outputCodeDir, file);
 	}
 	return {
+		inlineDynamicImports: true,
+		...other,
 		format,
 		file: `${file.replace(/\\/g, '/')}${extension}`
 	}

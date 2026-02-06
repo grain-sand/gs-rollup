@@ -10,11 +10,7 @@ export class DefaultValues {
 
 	static codeDir = 'lib'
 
-	static external: ExternalOption = [/^node:/, /(?:^[^/.]+|\.(vue|scss))$/]
-
-	static get fullCodeDir(): string {
-		return join(this.outputBase, this.codeDir)
-	}
+	static external: ExternalOption = [/^node:|dynamic|(?:^[^/.]{2}.*[^.]{4}|\.(vue|scss))$/]
 
 	static get input(): InputOption {
 		return this.#input || (this.#input = detectEntry())

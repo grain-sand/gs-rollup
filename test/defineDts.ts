@@ -7,11 +7,15 @@ import {defineDts} from "../src";
 
 describe('defineDts.ts', () => {
 	it('define string', async (): Promise<void> => {
-		const result = defineDts();
+		const result = defineDts({copyMd: false});
 		await logJson(result)
 	})
 	it('define array', async (): Promise<void> => {
-		const result = defineDts({input: ['src/index.ts', 'src/main.ts', 'src-com/main.ts'], includeInputDir: true, includeInputSrc: true});
+		const result = defineDts({
+			input: ['src/index.ts', 'src/main.ts', 'src-com/main.ts'],
+			includeInputDir: true,
+			includeInputSrc: true
+		});
 		await logJson(result)
 	})
 	it('define record', async (): Promise<void> => {
