@@ -3,34 +3,30 @@ import dts from "rollup-plugin-dts";
 import {IDefineDtsArg} from "../type";
 import {DefaultValues} from "./DefaultValues";
 import {defineCopy} from "./defineCopy";
+import {formatInput} from "./fn/formatInput";
+import {defineOutput} from "./defineOutput";
 
-export function defineDts(arg?: IDefineDtsArg): RollupOptions {
+export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 	const {
-		input = DefaultValues.input,
 		external = DefaultValues.external,
 		exclude = 'test/**/*.ts',
 		dir = DefaultValues.fullCodeDir,
-		file,
 		copyMd = true
 	} = arg || {}
+	const inputs = formatInput(arg);
 	const plugins = arg?.plugins || [];
+	plugins.push(dts({respectExternal: false, exclude: Array.isArray(exclude) ? exclude : [exclude]}))
 	if (copyMd) {
 		plugins.push(defineCopy('*.md'))
 	}
-	const output: OutputOptions = {
-		file,
-		dir,
-		format: 'esm',
-		entryFileNames: '[name].d.ts',
-		inlineDynamicImports: true
+	const result = [];
+	for (const [file, input] of Object.entries(inputs)) {
+		result.push({
+			input,
+			external,
+			plugins,
+			output: defineOutput(file, {format: 'esm', extension: '.d.ts'})
+		})
 	}
-	return {
-		input,
-		external,
-		output: Array.isArray(input) ? input.map(() => output) : output,
-		plugins: [
-			dts({respectExternal: false, exclude: Array.isArray(exclude) ? exclude : [exclude]}),
-			...plugins
-		],
-	}
+	return result;
 }

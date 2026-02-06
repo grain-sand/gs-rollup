@@ -4,7 +4,7 @@ import {join} from "node:path";
 
 export class DefaultValues {
 
-	static $input?: InputOption
+	static #input?: InputOption
 
 	static outputBase = 'dist'
 
@@ -17,10 +17,10 @@ export class DefaultValues {
 	}
 
 	static get input(): InputOption {
-		return this.$input || (this.$input = detectEntry())
+		return this.#input || (this.#input = detectEntry())
 	}
 
 	static set input(value: InputOption) {
-		this.$input = value
+		this.#input = value
 	}
 }

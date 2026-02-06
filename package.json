@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "scripts": {
 	"build": "tsx ./src/main.ts -c",
-	"install": "tsx ./src/main.ts -i",
-	"test:hello": "vitest run hello"
+	"install": "tsx ./src/main.ts -i"
   },
   "dependencies": {
 	"gs-base": "^0.1.20"

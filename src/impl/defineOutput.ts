@@ -1,7 +1,7 @@
-import {IDefineOutputArg} from "../type";
-import {ModuleFormat} from "rollup";
-import {isObject, isString} from "gs-base";
+import {IDefineOutputOption} from "../type";
+import {ModuleFormat, OutputOptions} from "rollup";
 import {DefaultValues} from "./DefaultValues";
+import {join} from "node:path";
 
 const moduleFormatExt: Record<ModuleFormat, string> = {
 	amd: ".amd.js",
@@ -16,22 +16,16 @@ const moduleFormatExt: Record<ModuleFormat, string> = {
 	systemjs: ".systemjs.js"
 };
 
-export function defineOutput(format: ModuleFormat): any;
-export function defineOutput(arg: IDefineOutputArg): any;
-export function defineOutput(arg: any): any {
-	arg = isString(arg) ? {format: arg} : arg
-	const {format}: IDefineOutputArg = arg;
-	const file = arg.file || defineFile(arg);
-
-}
-
-function defineFile(arg: IDefineOutputArg) {
-	const {format, dir, input = DefaultValues.input}: IDefineOutputArg = arg;
-	const names: string[] = [];
-	if (isString(input)) {
-		names.push(input as string);
-	} else if (Array.isArray(input)) {
-	} else if (isObject(input)) {
-		names.push(...Object.keys(input));
+export function defineOutput(file: string, arg: IDefineOutputOption): OutputOptions {
+	let {format, extension = moduleFormatExt[format], dir = DefaultValues.fullCodeDir, other} = arg;
+	if (!extension.startsWith('.')) {
+		extension = `.${extension}`;
+	}
+	if (dir) {
+		file = join(dir, file);
+	}
+	return {
+		format,
+		file: `${file.replace(/\\/g, '/')}${extension}`
 	}
 }

@@ -23,7 +23,7 @@ const dts = defineDts();
 logJson(dts, false)
 
 export default <RollupOptions[]>[
-	dts
+	...dts
 	// {
 	// 	input,
 	// 	external,
