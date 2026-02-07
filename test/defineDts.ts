@@ -12,14 +12,16 @@ describe('defineDts.ts', () => {
 	})
 	it('define array', async (): Promise<void> => {
 		const result = defineDts({
+			input: ['src/index.ts', 'src/main/index.ts', 'src/dts/index.ts', 'src-com/main.ts'],
+		});
+		await logJson(result)
+	})
+	it('define array include', async (): Promise<void> => {
+		const result = defineDts({
 			input: ['src/index.ts', 'src/main.ts', 'src-com/main.ts'],
 			includeInputDir: true,
 			includeInputSrc: true
 		});
-		await logJson(result)
-	})
-	it('define record', async (): Promise<void> => {
-		const result = defineDts();
 		await logJson(result)
 	})
 })

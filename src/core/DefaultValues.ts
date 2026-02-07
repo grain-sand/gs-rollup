@@ -1,6 +1,5 @@
 import {ExternalOption, InputOption} from "rollup";
-import {detectEntry} from "./fn/detectEntry";
-import {join} from "node:path";
+import {detectEntry} from "./fn";
 
 export class DefaultValues {
 

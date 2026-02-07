@@ -1,6 +1,6 @@
 import {DefaultValues} from "../DefaultValues";
 import {isObject, isString} from "gs-base";
-import {join} from "node:path";
+import {join, parse} from "node:path";
 import {IDefineArg} from "../../type";
 
 const parseNameRegex = /^([\w.-]+)[\/\\](.*?[\/\\])?([\w.-]+?)(?:\.[\w-]+)?$/
@@ -28,25 +28,46 @@ export function formatInput(arg?: IDefineArg): Record<string, string> {
 }
 
 function parseName(input: string, includeInputDir: boolean, includeInputSrc: boolean): string {
-	const match = input.replace(/\\/g, '/').match(parseNameRegex);
-	if (!match) {
-		return input;
-	}
-	const [, dir, prefix, name] = match;
+	const {name, dir} = parse(input);
 	let result: string;
 	switch (name) {
 		case 'index':
-			result = dir === 'src' && !prefix ? name : dir;
+			result = dir === 'src' ? name : dir.replace(/^.+[\/\\]/, '');
 			break;
 		default:
 			result = name;
 	}
 	if (includeInputDir) {
-		if (prefix) result = join(prefix, result);
-		if (includeInputSrc || dir !== 'src') {
-			result = join(dir, result);
-		}
-		result = result.replace(/\\/g, '/');
+		result = join(dir, result);
+		result = result.replace(/[\\/]+/g, '/');
+	}
+	if (!includeInputSrc || !includeInputDir) {
+		result = result.replace(/^src[\/\\]/, '');
 	}
 	return result;
 }
+
+// function parseName(input: string, includeInputDir: boolean, includeInputSrc: boolean): string {
+// 	console.log(parse(input))
+// 	const match = input.replace(/\\/g, '/').match(parseNameRegex);
+// 	if (!match) {
+// 		return input;
+// 	}
+// 	const [, dir, prefix, name] = match;
+// 	let result: string;
+// 	switch (name) {
+// 		case 'index':
+// 			result = dir === 'src' && !prefix ? name : dir;
+// 			break;
+// 		default:
+// 			result = name;
+// 	}
+// 	if (includeInputDir) {
+// 		if (prefix) result = join(prefix, result);
+// 		if (includeInputSrc || dir !== 'src') {
+// 			result = join(dir, result);
+// 		}
+// 		result = result.replace(/\\/g, '/');
+// 	}
+// 	return result;
+// }

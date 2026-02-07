@@ -1,7 +1,7 @@
 import {ExternalOption, InputOption, ModuleFormat, OutputOptions, Plugin} from "rollup";
 
 export interface IDefineArg {
-	outputBase: string,
+	outputBase?: string,
 	input?: InputOption
 	outputCodeDir?: string;
 	includeInputDir?: boolean;
@@ -15,15 +15,21 @@ export interface IDefineArg {
 interface IDefineOutputOptionBase {
 	format: ModuleFormat
 	extension?: string
-	other?: OutputOptions
+	/**
+	 * 覆盖输出选项
+	 */
+	overwriteProps?: OutputOptions
 }
 
 export interface IDefineOutputOption extends IDefineArg, IDefineOutputOptionBase {
 }
 
+export type ExternalByInput = Record<string, ExternalOption> | ((input: string) => ExternalOption)
+
 interface IDefineItemArg extends IDefineArg {
 	external?: ExternalOption[]
 	plugins?: Plugin[]
+	externalByInput?: ExternalByInput
 }
 
 export interface IDefineJsFormat extends IDefineOutputOptionBase {

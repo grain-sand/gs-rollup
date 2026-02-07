@@ -18,7 +18,7 @@ const moduleFormatExt: Record<ModuleFormat, string> = {
 
 export function defineOutput(file: string, arg: IDefineOutputOption): OutputOptions {
 	let {
-		other, format,
+		overwriteProps, format,
 		extension = moduleFormatExt[format],
 		outputCodeDir = DefaultValues.codeDir,
 		outputBase = DefaultValues.outputBase
@@ -33,9 +33,8 @@ export function defineOutput(file: string, arg: IDefineOutputOption): OutputOpti
 		file = join(outputCodeDir, file);
 	}
 	return {
-		inlineDynamicImports: true,
-		...other,
 		format,
-		file: `${file.replace(/\\/g, '/')}${extension}`
+		file: `${file.replace(/\\/g, '/')}${extension}`,
+		...overwriteProps,
 	}
 }

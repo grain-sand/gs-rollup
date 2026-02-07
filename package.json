@@ -2,8 +2,8 @@
   "name": "gs-build-tools",
   "version": "1.0.0",
   "scripts": {
-	"build": "tsx ./src/main.ts -c",
-	"install": "tsx ./src/main.ts -i"
+	"build": "tsx src/main/index.ts -c",
+	"install": "tsx src/main/index.ts -i"
   },
   "dependencies": {
 	"gs-base": "^0.1.20"

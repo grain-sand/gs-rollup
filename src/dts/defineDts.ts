@@ -1,32 +1,31 @@
 import {RollupOptions} from "rollup";
 import dts from "rollup-plugin-dts";
 import {IDefineDtsArg} from "../type";
-import {DefaultValues} from "./DefaultValues";
-import {defineCopy} from "./defineCopy";
-import {formatInput} from "./fn/formatInput";
-import {defineOutput} from "./defineOutput";
+import {DefaultValues, defineCopy, defineOutput} from "../core";
+import {formatInput, isStringInput} from "../core/fn";
+import {getExternalByInput} from "../core/fn/getExternalByInput";
 
 export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 	const {
-		external = DefaultValues.external,
 		exclude = 'test/**/*.ts',
 		copyMd = true,
-		output
+		output,
 	} = arg || {}
 	const inputs = formatInput(arg);
 	const plugins = arg?.plugins || [];
 	plugins.push(dts({respectExternal: false, exclude: Array.isArray(exclude) ? exclude : [exclude]}))
-	if (copyMd) {
-		plugins.push(defineCopy('*.md'))
-	}
-	const result = [];
-	for (const [file, input] of Object.entries(inputs)) {
+	const result: RollupOptions[] = [];
+	const inputEntries = Object.entries(inputs);
+	for (const [file, input] of inputEntries) {
 		result.push({
 			input,
-			external,
+			external: getExternalByInput(input, inputEntries, arg),
 			plugins,
 			output: output || defineOutput(file, {format: 'esm', extension: '.d.ts'})
 		})
+	}
+	if (copyMd) {
+		result[0].plugins = [...plugins, defineCopy('*.md')]
 	}
 	return result;
 }

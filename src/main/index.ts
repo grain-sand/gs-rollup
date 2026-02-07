@@ -2,12 +2,12 @@
 
 import {join, resolve} from "node:path";
 import {existsSync} from "node:fs";
-import {normalizeArgs} from "./main-fn/normalizeArgs";
-import {getConfigArg} from "./main-fn/getConfigArg";
-import {stripConfig} from "./main-fn/stripConfig";
-import {spawnRollup} from "./main-fn/spawnRollup";
-import {runProgrammaticDefault} from "./main-fn/runProgrammaticDefault";
-import {initProject} from "./main-fn/initProject";
+import {normalizeArgs} from "./normalizeArgs";
+import {getConfigArg} from "./getConfigArg";
+import {stripConfig} from "./stripConfig";
+import {spawnRollup} from "./spawnRollup";
+import {runProgrammaticDefault} from "./runProgrammaticDefault";
+import {initProject} from "./initProject";
 
 
 /* ================= 主流程 ================= */

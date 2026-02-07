@@ -4,10 +4,13 @@ import {RollupOptions} from 'rollup'
 import {DefaultValues, defineDts, defineJs} from "./src";
 import {logJson} from "gs-base";
 
-DefaultValues.input = {
-	index: 'src/index.ts',
-	main: 'src/main.ts',
-}
+DefaultValues.input = [
+	'src/index.ts',
+	'src/dts/index.ts',
+	'src/type/index.ts',
+	'src/core/index.ts',
+	'src/plugins/index.ts',
+]
 
 const dts = defineDts();
 const js = defineJs({
@@ -16,9 +19,11 @@ const js = defineJs({
 		minify: true
 	}, 'cjs'],
 })
-logJson(js, false)
 
-export default <RollupOptions[]>[
-	// ...dts
-	...js
+const rollupOptions: RollupOptions[] = [
+	...dts
+	// ...js
 ]
+logJson(rollupOptions, false)
+
+export default rollupOptions
