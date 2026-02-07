@@ -22,8 +22,8 @@ const js = defineJs({
 })
 
 const rollupOptions: RollupOptions[] = [
-	...dts
-	// ...js
+	// ...dts
+	...js
 ]
 logJson(rollupOptions, false)
 

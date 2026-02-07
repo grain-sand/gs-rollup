@@ -30,6 +30,7 @@ interface IDefineItemArg extends IDefineArg {
 	external?: ExternalOption[]
 	plugins?: Plugin[]
 	externalByInput?: ExternalByInput
+	processImport?: boolean
 }
 
 export interface IDefineJsFormat extends IDefineOutputOptionBase {

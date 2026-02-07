@@ -9,12 +9,19 @@ export function spawnRollup(args: string[] = [], useTS = false) {
 
 	const nodeArgs: string[] = [];
 
-	if (useTS)
+	if (useTS) {
 		nodeArgs.push("--import", "tsx/esm");
+	}
 
+
+	if (process.env.CHILD_DEBUG) {
+		nodeArgs.push('--inspect-brk', "--inspect-port=9229");
+	}
+	const allArgs = [...nodeArgs, bin, ...args];
+	// console.log(allArgs)
 	const child = spawn(
 		process.execPath,
-		[...nodeArgs, bin, ...args],
+		allArgs,
 		{stdio: "inherit"}
 	);
 

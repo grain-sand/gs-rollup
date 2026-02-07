@@ -1,17 +1,18 @@
 import {DefineJsFormat, IDefineJsArg, IDefineJsFormat, IDefineOutputOption} from "../type";
 import {DefaultValues} from "./DefaultValues";
-import {formatInput} from "./fn";
+import {formatInput, getExternalByInput} from "./fn";
 import resolve from "@rollup/plugin-node-resolve";
 import esbuild from "rollup-plugin-esbuild";
 import {RollupOptions} from "rollup";
-import {isString} from "gs-base";
+import {isBoolean, isString} from "gs-base";
 import {defineOutput} from "./defineOutput";
-import {rawLoader} from "../plugins";
+import {importReplace, rawLoader} from "../plugins";
 
 export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 	const {
 		external = DefaultValues.external,
 		minify = false,
+		processImport
 	} = arg || {}
 	const inputs = formatInput(arg);
 	const plugins = arg?.plugins || [];
@@ -21,13 +22,21 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 	const outputs = checkFormats(arg?.formats, arg);
 
 	const result = [];
-	for (const [file, input] of Object.entries(inputs)) {
+	const inputEntries = Object.entries(inputs);
+	for (const [file, input] of inputEntries) {
 		result.push({
 			input,
-			external,
+			external: getExternalByInput(input, inputEntries, arg),
 			plugins,
 			output: outputs.map(out => defineOutput(file, out))
 		})
+	}
+	if (processImport === false || result.length <= 1) {
+		return result;
+	}
+	const plugin = importReplace(isBoolean(processImport) ? undefined : processImport as any);
+	for (const item of result) {
+		item.plugins = [...(item.plugins || []), plugin];
 	}
 	return result;
 }
