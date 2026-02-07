@@ -1,16 +1,14 @@
 import {DefineJsFormat, IDefineJsArg, IDefineJsFormat, IDefineOutputOption} from "../type";
-import {DefaultValues} from "./DefaultValues";
 import {formatInput, getExternalByInput} from "./fn";
 import resolve from "@rollup/plugin-node-resolve";
 import esbuild from "rollup-plugin-esbuild";
 import {RollupOptions} from "rollup";
 import {isBoolean, isString} from "gs-base";
 import {defineOutput} from "./defineOutput";
-import {importReplace, rawLoader} from "../plugins";
+import {importReplace, rawLoader} from "./plugins";
 
 export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 	const {
-		external = DefaultValues.external,
 		minify = false,
 		processImport
 	} = arg || {}

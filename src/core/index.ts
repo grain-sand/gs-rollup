@@ -3,3 +3,5 @@ export * from './DefaultValues'
 export * from './defineOutput'
 export * from './defineJs'
 export * from './fn/index'
+export * from './plugins/index'
+

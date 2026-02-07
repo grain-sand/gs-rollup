@@ -8,8 +8,7 @@ const input = [
 	'src/index.ts',
 	'src/dts/index.ts',
 	'src/type/index.ts',
-	'src/core/index.ts',
-	'src/plugins/index.ts',
+	'src/core/index.ts'
 ]
 
 const dts = defineDts({input});
@@ -22,7 +21,7 @@ const js = defineJs({
 })
 
 const rollupOptions: RollupOptions[] = [
-	// ...dts
+	...dts,
 	...js
 ]
 logJson(rollupOptions, false)

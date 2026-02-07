@@ -28,7 +28,7 @@ export function importReplace(replace?: ImportReplaceRole): Plugin {
 		generateBundle({format}, bundle) {
 			if (!sFmtReg.test(format)) return;
 
-			for (const [file, chunk] of Object.entries(bundle) as [string, OutputAsset & OutputChunk][]) {
+			for (const chunk of Object.values(bundle) as (OutputAsset & OutputChunk)[]) {
 				let code = chunk.code || chunk.source.toString();
 				if (esFmtReg.test(format)) {
 					code = processEsCode(code, fn);

@@ -1,8 +1,7 @@
 import {RollupOptions} from "rollup";
 import dts from "rollup-plugin-dts";
 import {IDefineDtsArg} from "../type";
-import {defineCopy, defineOutput, formatInput, getExternalByInput} from "../core";
-import {importReplace} from "../plugins";
+import {defineCopy, defineOutput, formatInput, getExternalByInput, importReplace} from "../core";
 import {isBoolean} from "gs-base";
 
 export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
