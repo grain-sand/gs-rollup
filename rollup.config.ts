@@ -1,7 +1,5 @@
-import esbuild from 'rollup-plugin-esbuild'
-import resolve from '@rollup/plugin-node-resolve'
 import {RollupOptions} from 'rollup'
-import {DefaultValues, defineDts, defineJs} from "./src";
+import {defineJs, defineDts} from "./src";
 import {logJson} from "gs-base";
 
 const input = [
@@ -14,10 +12,8 @@ const input = [
 const dts = defineDts({input});
 const js = defineJs({
 	input,
-	formats: [{
-		format: 'esm',
-		minify: true
-	}, 'cjs'],
+	// minify: true,
+	formats: ['esm', 'cjs'],
 })
 
 const rollupOptions: RollupOptions[] = [
