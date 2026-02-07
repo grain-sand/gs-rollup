@@ -6,7 +6,7 @@ import esbuild from "rollup-plugin-esbuild";
 import {RollupOptions} from "rollup";
 import {isString} from "gs-base";
 import {defineOutput} from "./defineOutput";
-import {rawPlugin} from "../plugins";
+import {rawLoader} from "../plugins";
 
 export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 	const {
@@ -16,7 +16,7 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 	const inputs = formatInput(arg);
 	const plugins = arg?.plugins || [];
 	plugins.push(resolve())
-	plugins.push(rawPlugin())
+	plugins.push(rawLoader())
 	plugins.push(esbuild({target: 'esnext', minifySyntax: true, charset: 'utf8', minify}))
 	const outputs = checkFormats(arg?.formats, arg);
 

@@ -4,7 +4,7 @@ import {RollupOptions} from 'rollup'
 import {DefaultValues, defineDts, defineJs} from "./src";
 import {logJson} from "gs-base";
 
-DefaultValues.input = [
+const input = [
 	'src/index.ts',
 	'src/dts/index.ts',
 	'src/type/index.ts',
@@ -12,8 +12,9 @@ DefaultValues.input = [
 	'src/plugins/index.ts',
 ]
 
-const dts = defineDts();
+const dts = defineDts({input});
 const js = defineJs({
+	input,
 	formats: [{
 		format: 'esm',
 		minify: true
