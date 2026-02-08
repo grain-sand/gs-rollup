@@ -1,5 +1,6 @@
 import {FunctionPluginHooks, OutputAsset, OutputChunk, Plugin} from "rollup";
 import {isFunction} from "gs-base";
+import {margeEsImport} from "../tools";
 
 export const defaultImportReplaceRole: IImportReplaceRole = {search: /^(\.{2}\/)+/, replace: './'}
 
@@ -32,7 +33,7 @@ export function importReplace(replace?: ImportReplaceRole): Plugin {
 				let code = chunk.code || chunk.source.toString();
 				if (esFmtReg.test(format)) {
 					code = processEsCode(code, fn);
-					// code = margeEsImport(code);
+					code = margeEsImport(code);
 				} else {
 					code = processCjsCode(code, fn);
 				}

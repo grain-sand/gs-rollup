@@ -27,8 +27,7 @@ export function margeEsImport(code: string): string {
 		// 解析导入语句
 		const importInfo = parseImportStatement(line);
 		if (!importInfo) {
-			// 如果解析失败，将该行保留
-			resultLines.push(line);
+			// 如果解析失败，跳过该行
 			continue;
 		}
 
@@ -104,6 +103,11 @@ function parseImportStatement(line: string): {
 	name: string;
 	namedImports?: string[];
 } | null {
+	// 跳过模板字符串中的导入语句
+	if (line.includes('`')) {
+		return null;
+	}
+
 	// 匹配命名空间导入
 	const namespaceRegex = /^\s*import\s+\*\s+as\s+([\w$]+)\s+from\s+(['"])([^'"]+)\2\s*;?\s*$/;
 	const namespaceMatch = namespaceRegex.exec(line);
@@ -200,7 +204,7 @@ function generateMergedImport(modulePath: string, info: {
 // 处理单行中的多个导入语句（minified code）
 function processSingleLine(code: string): string {
 	// 查找所有导入语句的位置
-	const importRegex = /import\s+(?:\*\s+as\s+[\w$]+|[\w$]+|\{[^}]*\})\s+from\s+(['"])([^'"]+)\1\s*;?/g;
+	const importRegex = /import\s+(?:\*\s+as\s+[\w$]+|[\w$]+|\{[^}]*})\s+from\s+(['"])([^'"]+)\1\s*;?/g;
 	const importMatches: Array<{start: number; end: number; stmt: string}> = [];
 
 	let match;
@@ -260,7 +264,6 @@ function processSingleLine(code: string): string {
 
 	// 构建结果字符串
 	let result = '';
-	let lastIndex = 0;
 
 	// 按出现顺序处理导入模块
 	const processedModules = new Set<string>();
