@@ -2,7 +2,7 @@ import copy from "rollup-plugin-copy";
 import {ICopyTarget} from "../type";
 import {isObject} from "gs-base";
 import {Plugin} from 'rollup'
-import {DefaultValues} from "./DefaultValues";
+import {DefaultValues} from "../tools";
 
 export function defineCopy(src: string | string[], dest?: string): Plugin
 export function defineCopy(targets: ICopyTarget[], dest?: string): Plugin

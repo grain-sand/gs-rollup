@@ -18,8 +18,8 @@ const cjsFormats = ['cjs', 'commonjs']
 const esFmtReg = new RegExp(`^(${esFormats.join('|')})$`, 'i')
 const sFmtReg = new RegExp(`^(${[...esFormats, ...cjsFormats].join('|')})$`, 'i')
 
-const esImtReg = /((?:import|from)\s*)(['"])([^'"]+)\2\s*/g
-const cjsImtReg = /require\(\s*(['"])([^'"]+)\1\s*\)/g
+const esImtReg = /((?:import|from)\s*)(['"])([^'"\s]+)\2/g
+const cjsImtReg = /require\(\s*(['"])([^'"\s]+)\1\s*\)/g
 
 export function importReplace(replace?: ImportReplaceRole): Plugin {
 	const fn = parseFn(replace || defaultImportReplaceRole);
@@ -32,6 +32,7 @@ export function importReplace(replace?: ImportReplaceRole): Plugin {
 				let code = chunk.code || chunk.source.toString();
 				if (esFmtReg.test(format)) {
 					code = processEsCode(code, fn);
+					// code = margeEsImport(code);
 				} else {
 					code = processCjsCode(code, fn);
 				}
@@ -52,6 +53,10 @@ function processCjsCode(code: string, fn: IImportReplaceFn) {
 
 function processEsCode(code, fn: IImportReplaceFn) {
 	return code.replace(esImtReg, (_, p1, p2, p3) => `${p1}'${fn(p3)}'`);
+	// return code.replace(esImtReg, (_, p1, p2, p3) => {
+	// 	console.log(_,`${p1}'${fn(p3)}'`)
+	// 	return `${p1}'${fn(p3)}'`
+	// });
 }
 
 function parseFn(replace: ImportReplaceRole): IImportReplaceFn {

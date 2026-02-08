@@ -1,5 +1,5 @@
-import {describe, it, expect} from 'vitest';
-import {margeEsImport} from '../src/tools/margeEsImport';
+import {describe, expect, it} from 'vitest';
+import {margeEsImport} from '../src/tools';
 
 describe('margeEsImport', () => {
 	it('should merge multiple imports from the same module', () => {

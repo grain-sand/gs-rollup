@@ -1,6 +1,6 @@
 import {IDefineOutputOption} from "../type";
 import {ModuleFormat, OutputOptions} from "rollup";
-import {DefaultValues} from "./DefaultValues";
+import {DefaultValues} from "../tools";
 import {join} from "node:path";
 
 const moduleFormatExt: Record<ModuleFormat, string> = {

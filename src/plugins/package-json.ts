@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import {FunctionPluginHooks, ModuleFormat, Plugin} from "rollup";
 import {PackageJson} from "type-fest";
-import {DefaultValues} from "../core";
+import {DefaultValues} from "../tools";
 
 const defaultFileName = 'package.json';
 

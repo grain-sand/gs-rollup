@@ -1,7 +1,7 @@
 import {ExternalByInput, IDefineDtsArg} from "../type";
 import {ExternalOption} from "rollup";
-import {DefaultValues} from "../core";
 import {isFunction} from "gs-base";
+import {DefaultValues} from "./DefaultValues";
 
 export function getExternalByInput(currInput: string, inputEntries: [string, string][], arg?: IDefineDtsArg): ExternalOption | undefined {
 	const {

@@ -8,7 +8,7 @@ export function margeEsImport(code: string): string {
 	// 将代码按行分割
 	const lines = code.split('\n');
 	const resultLines: string[] = [];
-	
+
 	// 按模块路径分组的导入信息
 	const moduleImports = new Map<string, {
 		defaultImports: string[];
@@ -62,7 +62,7 @@ export function margeEsImport(code: string): string {
 
 	for (const line of lines) {
 		const trimmedLine = line.trim();
-		
+
 		// 检查是否是导入语句
 		if (trimmedLine.startsWith('import ')) {
 			const importInfo = parseImportStatement(line);
@@ -84,7 +84,7 @@ export function margeEsImport(code: string): string {
 				}
 				processedModules.add(modulePath);
 			}
-			
+
 			inImportBlock = true;
 		} else {
 			// 非导入语句
@@ -116,7 +116,7 @@ function parseImportStatement(line: string): {
 	}
 
 	// 匹配默认导入 + 命名导入
-	const defaultAndNamedRegex = /^\s*import\s+([\w$]+)\s*,\s*\{([^}]*)\}\s+from\s+(['"])([^'"]+)\3\s*;?\s*$/;
+	const defaultAndNamedRegex = /^\s*import\s+([\w$]+)\s*,\s*\{([^}]*)}\s+from\s+(['"])([^'"]+)\3\s*;?\s*$/;
 	const defaultAndNamedMatch = defaultAndNamedRegex.exec(line);
 	if (defaultAndNamedMatch) {
 		const namedImports = defaultAndNamedMatch[2].split(',')
@@ -131,7 +131,7 @@ function parseImportStatement(line: string): {
 	}
 
 	// 匹配仅命名导入
-	const namedOnlyRegex = /^\s*import\s*\{([^}]*)\}\s+from\s+(['"])([^'"]+)\2\s*;?\s*$/;
+	const namedOnlyRegex = /^\s*import\s*\{([^}]*)}\s+from\s+(['"])([^'"]+)\2\s*;?\s*$/;
 	const namedOnlyMatch = namedOnlyRegex.exec(line);
 	if (namedOnlyMatch) {
 		const namedImports = namedOnlyMatch[1].split(',')
@@ -202,7 +202,7 @@ function processSingleLine(code: string): string {
 	// 查找所有导入语句的位置
 	const importRegex = /import\s+(?:\*\s+as\s+[\w$]+|[\w$]+|\{[^}]*\})\s+from\s+(['"])([^'"]+)\1\s*;?/g;
 	const importMatches: Array<{start: number; end: number; stmt: string}> = [];
-	
+
 	let match;
 	while ((match = importRegex.exec(code)) !== null) {
 		importMatches.push({
@@ -264,7 +264,7 @@ function processSingleLine(code: string): string {
 
 	// 按出现顺序处理导入模块
 	const processedModules = new Set<string>();
-	
+
 	// 先添加导入语句前的内容
 	if (importMatches.length > 0) {
 		result += code.slice(0, importMatches[0].start);
@@ -290,7 +290,7 @@ function processSingleLine(code: string): string {
 				...moduleInfo,
 				isProcessed: false
 			});
-			
+
 			if (mergedImport) {
 				result += mergedImport;
 			}

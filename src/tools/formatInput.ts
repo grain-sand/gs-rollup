@@ -1,7 +1,7 @@
-import {DefaultValues} from "../core";
 import {isObject, isString} from "gs-base";
 import {join, parse} from "node:path";
 import {IDefineArg} from "../type";
+import {DefaultValues} from "./DefaultValues";
 
 export function formatInput(arg?: IDefineArg): Record<string, string> {
 	const {input = DefaultValues.input, includeInputDir, includeInputSrc} = arg || {};

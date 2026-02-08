@@ -1,4 +1,3 @@
 export * from './defineCopy'
-export * from './DefaultValues'
 export * from './defineOutput'
 export * from './defineJs'
