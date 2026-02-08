@@ -1,9 +1,7 @@
-import {DefaultValues} from "../DefaultValues";
+import {DefaultValues} from "../core";
 import {isObject, isString} from "gs-base";
 import {join, parse} from "node:path";
-import {IDefineArg} from "../../type";
-
-const parseNameRegex = /^([\w.-]+)[\/\\](.*?[\/\\])?([\w.-]+?)(?:\.[\w-]+)?$/
+import {IDefineArg} from "../type";
 
 export function formatInput(arg?: IDefineArg): Record<string, string> {
 	const {input = DefaultValues.input, includeInputDir, includeInputSrc} = arg || {};
@@ -46,28 +44,3 @@ function parseName(input: string, includeInputDir: boolean, includeInputSrc: boo
 	}
 	return result;
 }
-
-// function parseName(input: string, includeInputDir: boolean, includeInputSrc: boolean): string {
-// 	console.log(parse(input))
-// 	const match = input.replace(/\\/g, '/').match(parseNameRegex);
-// 	if (!match) {
-// 		return input;
-// 	}
-// 	const [, dir, prefix, name] = match;
-// 	let result: string;
-// 	switch (name) {
-// 		case 'index':
-// 			result = dir === 'src' && !prefix ? name : dir;
-// 			break;
-// 		default:
-// 			result = name;
-// 	}
-// 	if (includeInputDir) {
-// 		if (prefix) result = join(prefix, result);
-// 		if (includeInputSrc || dir !== 'src') {
-// 			result = join(dir, result);
-// 		}
-// 		result = result.replace(/\\/g, '/');
-// 	}
-// 	return result;
-// }

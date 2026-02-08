@@ -1,5 +1,5 @@
 import {Options} from "rollup-plugin-esbuild";
-import {detectEntry} from "../core/fn/detectEntry";
+import {detectEntry} from "../tools";
 import {GeneratedConfig} from "./types";
 
 export async function generateConfig(): Promise<GeneratedConfig> {

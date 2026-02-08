@@ -1,17 +1,14 @@
 import {DefineJsFormat, IDefineJsArg, IDefineJsFormat, IDefineOutputOption} from "../type";
-import {formatInput, getExternalByInput} from "./fn";
+import {formatInput, getExternalByInput, itemAfterAddPlugin} from "../tools";
 import resolve from "@rollup/plugin-node-resolve";
 import esbuild from "rollup-plugin-esbuild";
 import {RollupOptions} from "rollup";
-import {isBoolean, isString} from "gs-base";
+import {isString} from "gs-base";
 import {defineOutput} from "./defineOutput";
-import {importReplace, rawLoader} from "./plugins";
+import {rawLoader} from "../plugins";
 
 export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
-	const {
-		minify = false,
-		processImport
-	} = arg || {}
+	const {minify = false,} = arg || {}
 	const inputs = formatInput(arg);
 	const plugins = arg?.plugins || [];
 	plugins.push(resolve())
@@ -29,14 +26,7 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 			output: outputs.map(out => defineOutput(file, out))
 		})
 	}
-	if (processImport === false || result.length <= 1) {
-		return result;
-	}
-	const plugin = importReplace(isBoolean(processImport) ? undefined : processImport as any);
-	for (const item of result) {
-		item.plugins = [...(item.plugins || []), plugin];
-	}
-	return result;
+	return itemAfterAddPlugin(result, arg);
 }
 
 function checkFormats(formats: DefineJsFormat | DefineJsFormat[] = ['esm', 'cjs'], arg: IDefineJsArg): IDefineOutputOption[] {

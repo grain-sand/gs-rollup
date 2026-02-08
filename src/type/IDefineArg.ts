@@ -31,6 +31,8 @@ interface IDefineItemArg extends IDefineArg {
 	plugins?: Plugin[]
 	externalByInput?: ExternalByInput
 	processImport?: boolean
+	addExternal?: string | RegExp | (string | RegExp)[]
+	addPlugins?: Plugin[]
 }
 
 export interface IDefineJsFormat extends IDefineOutputOptionBase {

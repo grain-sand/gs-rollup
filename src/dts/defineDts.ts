@@ -1,15 +1,14 @@
 import {RollupOptions} from "rollup";
 import dts from "rollup-plugin-dts";
 import {IDefineDtsArg} from "../type";
-import {defineCopy, defineOutput, formatInput, getExternalByInput, importReplace} from "../core";
-import {isBoolean} from "gs-base";
+import {formatInput, getExternalByInput, itemAfterAddPlugin} from "../tools";
+import {defineCopy, defineOutput} from "../core";
 
 export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 	const {
 		exclude = 'test/**/*.ts',
 		copyMd = true,
 		output,
-		processImport
 	} = arg || {}
 	const inputs = formatInput(arg);
 	const plugins = arg?.plugins || [];
@@ -27,12 +26,5 @@ export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 	if (copyMd) {
 		result[0].plugins = [...plugins, defineCopy('*.md')]
 	}
-	if (processImport === false || result.length <= 1) {
-		return result;
-	}
-	const plugin = importReplace(isBoolean(processImport) ? undefined : processImport as any);
-	for (const item of result) {
-		item.plugins = [...(item.plugins || []), plugin];
-	}
-	return result;
+	return itemAfterAddPlugin(result, arg);
 }

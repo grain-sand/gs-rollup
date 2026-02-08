@@ -6,7 +6,9 @@ const input = [
 	'src/index.ts',
 	'src/dts/index.ts',
 	'src/type/index.ts',
-	'src/core/index.ts'
+	'src/core/index.ts',
+	'src/tools/index.ts',
+	'src/plugins/index.ts',
 ]
 
 const dts = defineDts({input});
