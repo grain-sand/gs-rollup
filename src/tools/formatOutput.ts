@@ -3,11 +3,11 @@ import {join} from "node:path";
 import {isCjsFormat, isEsFormat} from "./isEsOrCjsFormat";
 
 export function formatOutput(file: string, outputBase, outputCodeDir, format: ModuleFormat | '.d.ts', extension?: string) {
-	extension || (extension = getExt(format));
+	extension === undefined && (extension = getExt(format));
 	if (outputBase) {
 		outputCodeDir = join(outputBase, outputCodeDir);
 	}
-	if (!extension.startsWith('.')) {
+	if (extension && !extension.startsWith('.')) {
 		extension = `.${extension}`;
 	}
 	if (outputCodeDir) {

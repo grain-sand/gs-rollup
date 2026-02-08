@@ -9,10 +9,7 @@ import {spawnRollup} from "./spawnRollup";
 import {runProgrammaticDefault} from "./runProgrammaticDefault";
 import {initProject} from "./initProject";
 
-
-/* ================= 主流程 ================= */
-
-export async function main() {
+export async function index() {
 
 	const args = normalizeArgs(process.argv.slice(2));
 	const has = (f: string) => args.includes(f);
@@ -65,7 +62,7 @@ export async function main() {
 	spawnRollup(args);
 }
 
-main().catch(e => {
+index().catch(e => {
 	console.error(e);
 	process.exit(1);
 });

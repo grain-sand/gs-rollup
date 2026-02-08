@@ -1,14 +1,22 @@
 import {existsSync, writeFileSync} from "node:fs";
-import {generateConfig} from "./generateConfig";
-import {serializeConfig} from "./serializeConfig";
+import {detectEntry} from "../tools";
+
+const cfgPath = 'rollup.config.ts'
 
 export async function initProject() {
-
-	const cfgPath = 'rollup.config.ts'
 	if (existsSync(cfgPath)) return
-
-	const generated = await generateConfig()
-	const content = serializeConfig(generated)
-
-	writeFileSync(cfgPath, content)
+	const entry = detectEntry() || 'src/index.ts';
+	const out = [
+		"import { RollupOptions } from 'rollup'",
+		"import { defineJs, defineDts } from 'gs-rollup'",
+		'',
+		`const input = [ '${entry.replace(/\\/g, '/')}' ]`,
+		"",
+		"export default <RollupOptions[]>[",
+		"\t...defineDts({input}),",
+		"\t...defineJs({input})",
+		"]",
+		"",
+	];
+	writeFileSync(cfgPath, out.join('\n'))
 }

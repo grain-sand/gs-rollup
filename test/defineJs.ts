@@ -3,8 +3,9 @@
 
 import {describe, it, expect} from "vitest";
 import {logJson} from "gs-base";
-import {DefaultValues, defineJs} from "../src";
+import { defineJs} from "../src";
 import {readFileSync} from "node:fs";
+import {DefaultValues} from "../src/tools";
 
 describe('defineJs', () => {
 	it('js default', async (): Promise<void> => {

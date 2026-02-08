@@ -1,5 +1,6 @@
 import {ExternalOption, InputOption, ModuleFormat, OutputOptions, Plugin} from "rollup";
 import {IPackageJsonArg} from "./IPackageJsonArg";
+import {Options} from "rollup-plugin-esbuild";
 
 export interface IDefineArg {
 	outputBase?: string,
@@ -42,9 +43,8 @@ export interface IDefineJsFormat extends IDefineOutputOptionBase {
 export type DefineJsFormat = IDefineJsFormat | ModuleFormat
 
 export interface IDefineJsArg extends IDefineItemArg {
-	minify?: boolean
-	target?: string | string[]
 	formats?: DefineJsFormat | DefineJsFormat[]
+	esbuild?: Options
 }
 
 export interface IDefineDtsArg extends IDefineItemArg {

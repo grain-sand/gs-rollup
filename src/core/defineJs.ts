@@ -1,19 +1,21 @@
 import {DefineJsFormat, IDefineJsArg, IDefineJsFormat, IDefineOutputOption} from "../type";
 import {formatInput, getExternalByInput, itemAfterAddPlugin} from "../tools";
 import resolve from "@rollup/plugin-node-resolve";
-import esbuild from "rollup-plugin-esbuild";
+import esbuild, {Options} from "rollup-plugin-esbuild";
 import {RollupOptions} from "rollup";
 import {isString} from "gs-base";
 import {defineOutput} from "./defineOutput";
 import {rawLoader} from "../plugins";
 
+const defaultEsbuildOption: Options = {target: 'esnext', minifySyntax: true, charset: 'utf8'}
+
 export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
-	const {minify = false,} = arg || {}
+	const {esbuild: esOpt = {}} = arg || {}
 	const inputs = formatInput(arg);
 	const plugins = arg?.plugins || [];
 	plugins.push(resolve())
 	plugins.push(rawLoader())
-	plugins.push(esbuild({target: 'esnext', minifySyntax: true, charset: 'utf8', minify}))
+	plugins.push(esbuild(<Options>{...defaultEsbuildOption, ...esOpt}))
 	const outputs = checkFormats(arg?.formats, arg);
 
 	const result = [];

@@ -1,12 +1,12 @@
-import {generateConfig} from "./generateConfig";
+import {defineDts} from "../dts";
+import {defineJs} from "../core";
 
 export async function runProgrammaticDefault() {
-
 	const {rollup} = await import('rollup')
-	const {rollup: configs} = await generateConfig()
-
-	for (const cfg of configs) {
-
+	for (const cfg of [
+		...defineDts(),
+		...defineJs()
+	]) {
 		const bundle = await rollup(cfg)
 		const outputs = Array.isArray(cfg.output) ? cfg.output : [cfg.output]
 

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
 	"build": "tsx src/main/index.ts -c",
-	"install": "tsx src/main/index.ts -i"
+	"test": "vitest run",
+	"test:install": "tsx src/main/index.ts -i"
   },
   "dependencies": {
   },
