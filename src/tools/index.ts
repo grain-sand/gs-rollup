@@ -5,4 +5,7 @@ export * from './getExternalByInput'
 export * from './itemAfterAddPlugin'
 export * from './margeEsImport'
 export * from './DefaultValues'
+export * from './processPackageJson'
+export * from './formatOutput'
+export * from './isEsOrCjsFormat'
 

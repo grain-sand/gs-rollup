@@ -7,7 +7,7 @@ export class DefaultValues {
 
 	static outputBase = 'dist'
 
-	static codeDir = 'lib'
+	static outputCodeDir = 'lib'
 
 	static external: ExternalOption = [/^node:|dynamic|(?:^[^/.]{2}.*[^.]{4}|\.(vue|scss))$/]
 

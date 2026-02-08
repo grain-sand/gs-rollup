@@ -1,4 +1,5 @@
 import {ExternalOption, InputOption, ModuleFormat, OutputOptions, Plugin} from "rollup";
+import {IPackageJsonArg} from "./IPackageJsonArg";
 
 export interface IDefineArg {
 	outputBase?: string,
@@ -50,4 +51,5 @@ export interface IDefineDtsArg extends IDefineItemArg {
 	exclude?: string | string[]
 	copyMd?: boolean
 	output?: OutputOptions
+	buildPackageJson?: IPackageJsonArg | boolean
 }

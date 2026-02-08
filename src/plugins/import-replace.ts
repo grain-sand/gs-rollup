@@ -1,6 +1,6 @@
 import {FunctionPluginHooks, OutputAsset, OutputChunk, Plugin} from "rollup";
 import {isFunction} from "gs-base";
-import {margeEsImport} from "../tools";
+import {isEsFormat, isEsOrCjsFormat, margeEsImport} from "../tools";
 
 export const defaultImportReplaceRole: IImportReplaceRole = {search: /^(\.{2}\/)+/, replace: './'}
 
@@ -13,12 +13,6 @@ export interface IImportReplaceRole {
 
 export type ImportReplaceRole = IImportReplaceRole | IImportReplaceRole[] | IImportReplaceFn
 
-const esFormats = ['es', 'esm', 'module']
-const cjsFormats = ['cjs', 'commonjs']
-
-const esFmtReg = new RegExp(`^(${esFormats.join('|')})$`, 'i')
-const sFmtReg = new RegExp(`^(${[...esFormats, ...cjsFormats].join('|')})$`, 'i')
-
 const esImtReg = /((?:import|from)\s*)(['"])([^'"\s]+)\2/g
 const cjsImtReg = /require\(\s*(['"])([^'"\s]+)\1\s*\)/g
 
@@ -27,11 +21,11 @@ export function importReplace(replace?: ImportReplaceRole): Plugin {
 	return <Plugin & Partial<FunctionPluginHooks>>{
 		name: 'import-replace',
 		generateBundle({format}, bundle) {
-			if (!sFmtReg.test(format)) return;
+			if (!isEsOrCjsFormat(format)) return;
 
 			for (const chunk of Object.values(bundle) as (OutputAsset & OutputChunk)[]) {
 				let code = chunk.code || chunk.source.toString();
-				if (esFmtReg.test(format)) {
+				if (isEsFormat(format)) {
 					code = processEsCode(code, fn);
 					code = margeEsImport(code);
 				} else {

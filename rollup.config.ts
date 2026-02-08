@@ -11,29 +11,20 @@ const input = [
 	'src/tools/index.ts',
 ]
 
-const dts = defineDts({input});
-const js = defineJs({
-	input,
-	// minify: true,
-	// outputCodeDir:'lib-min',
-	formats: ['esm','cjs'],
-})
-const js2 = defineJs({
-	input:['src/main/index.ts'],
-	// minify: true,
-	outputCodeDir:'bin',
-	formats: ['cjs'],
-	addExternal:/^[.\/].*\/(core|tools|plugins|type|dts)$/,
-	addPlugins:[importReplace({
-		search:/^(\.{2}\/)+/,
-		replace:'../lib/'
-	})]
-})
-
 const rollupOptions: RollupOptions[] = [
-	// ...dts,
-	// ...js,
-	...js2
+	...defineDts({input}),
+	...defineJs({input, formats: ['esm', 'cjs']}),
+	// ...defineJs({
+	// 	input: ['src/main/index.ts'],
+	// 	minify: true,
+	// 	outputCodeDir: 'bin',
+	// 	formats: ['cjs'],
+	// 	addExternal: /^[.\/].*\/(core|tools|plugins|type|dts)$/,
+	// 	addPlugins: [importReplace({
+	// 		search: /^(\.{2}\/)+/,
+	// 		replace: '../lib/'
+	// 	})]
+	// })
 ]
 logJson(rollupOptions, false)
 
