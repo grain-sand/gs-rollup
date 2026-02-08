@@ -14,7 +14,7 @@ export function spawnRollup(args: string[] = [], useTS = false) {
 	}
 
 
-	if (process.env.CHILD_DEBUG) {
+	if (process.env.DEBUG) {
 		nodeArgs.push('--inspect-brk', "--inspect-port=9229");
 	}
 	const allArgs = [...nodeArgs, bin, ...args];

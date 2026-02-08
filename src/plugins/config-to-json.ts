@@ -1,16 +1,9 @@
 import {pathToFileURL} from "node:url";
 import fs from "node:fs/promises";
 import {FunctionPluginHooks, Plugin} from "rollup";
+import {IConfigToJsonArg} from "../type";
 
 const SUPPORTED = /\.(ts|js|json)$/;
-
-export interface IConfigToJsonArg {
-	transform?: (
-		data: any,
-		ctx: { name: string; file: string }
-	) => any | Promise<any>;
-	minify?: boolean;
-}
 
 export function configToJson(arg: IConfigToJsonArg = {}): Plugin {
 	const entries = new Map<string, string>();

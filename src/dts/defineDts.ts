@@ -1,5 +1,5 @@
 import {RollupOptions} from "rollup";
-import dts from "rollup-plugin-dts";
+import {dts} from "rollup-plugin-dts";
 import {IDefineDtsArg} from "../type";
 import {formatInput, getExternalByInput, itemAfterAddPlugin} from "../tools";
 import {defineCopy, defineOutput} from "../core";

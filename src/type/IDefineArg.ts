@@ -1,6 +1,4 @@
-import {ExternalOption, InputOption, ModuleFormat, OutputOptions, Plugin} from "rollup";
-import {IPackageJsonArg} from "./IPackageJsonArg";
-import {Options} from "rollup-plugin-esbuild";
+import {ExternalOption, InputOption, ModuleFormat, OutputOptions} from "rollup";
 
 export interface IDefineArg {
 	outputBase?: string,
@@ -28,28 +26,10 @@ export interface IDefineOutputOption extends IDefineArg, IDefineOutputOptionBase
 
 export type ExternalByInput = Record<string, ExternalOption> | ((input: string) => ExternalOption)
 
-interface IDefineItemArg extends IDefineArg {
-	external?: ExternalOption[]
-	plugins?: Plugin[]
-	externalByInput?: ExternalByInput
-	processImport?: boolean
-	addExternal?: string | RegExp | (string | RegExp)[]
-	addPlugins?: Plugin[]
-}
+
 
 export interface IDefineJsFormat extends IDefineOutputOptionBase {
 }
 
 export type DefineJsFormat = IDefineJsFormat | ModuleFormat
 
-export interface IDefineJsArg extends IDefineItemArg {
-	formats?: DefineJsFormat | DefineJsFormat[]
-	esbuild?: Options
-}
-
-export interface IDefineDtsArg extends IDefineItemArg {
-	exclude?: string | string[]
-	copyMd?: boolean
-	output?: OutputOptions
-	buildPackageJson?: IPackageJsonArg | boolean
-}

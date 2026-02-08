@@ -15,24 +15,23 @@ export default <RollupOptions[]>[
 	...defineDts({
 		input,
 		buildPackageJson: {
-			deleteProps: /^(devDependencies|scripts)$/
+			deleteProps: /^(devDependencies|scripts)$/,
+			overwriteProps: {
+				bin: './bin/main.cjs'
+			}
 		}
 	}),
 	...defineJs({input}),
 	...defineJs({
-		input: {
-			'gs-rollup': 'src/main/index.ts'
-		},
+		input: 'src/main/index.ts',
 		esbuild: {minify: true},
 		outputCodeDir: 'bin',
-		formats: [{
-			format: 'cjs',
-			extension: ''
-		}],
+		formats: ['cjs'],
 		addExternal: /^[.\/].*\/(core|tools|plugins|type|dts)$/,
 		addPlugins: [importReplace({
-			search: /^(\.{2}\/)+/,
-			replace: '../lib/'
+			search: /^(?:\.{2}\/)+/,
+			replace: '../lib/',
+			ensureExtension: true
 		})],
 	})
 ]

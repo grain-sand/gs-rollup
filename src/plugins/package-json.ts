@@ -8,7 +8,8 @@ export function packageJson(arg?: IPackageJsonArg): Plugin {
 	return <Plugin & Partial<FunctionPluginHooks>>{
 		name: 'package-json',
 		generateBundle() {
-			const {outputBase = DefaultValues.outputBase} = arg||{};
+			const {outputBase = DefaultValues.outputBase} = arg || {};
+			fs.mkdirSync(outputBase, {recursive: true});
 			fs.writeFileSync(join(outputBase, defaultPackageJsonFileName), processPackageJson(arg));
 		},
 	}

@@ -1,6 +1,6 @@
 {
   "name": "gs-rollup",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "author": {
 	"name": "grain-sand"
@@ -42,8 +42,5 @@
   "repository": {
 	"type": "git",
 	"url": "https://github.com/grain-sand/gs-rollup.git"
-  },
-  "bin": {
-	"gs-rollup": "dist/bin/main"
   }
 }

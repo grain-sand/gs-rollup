@@ -1,9 +1,9 @@
 import {DefineJsFormat, IDefineJsArg, IDefineJsFormat, IDefineOutputOption} from "../type";
 import {formatInput, getExternalByInput, itemAfterAddPlugin} from "../tools";
-import resolve from "@rollup/plugin-node-resolve";
+import {nodeResolve as resolve} from "@rollup/plugin-node-resolve";
 import esbuild, {Options} from "rollup-plugin-esbuild";
 import {RollupOptions} from "rollup";
-import {isString} from "gs-base";
+import {isFunction, isString} from "gs-base";
 import {defineOutput} from "./defineOutput";
 import {rawLoader} from "../plugins";
 
@@ -15,7 +15,9 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 	const plugins = arg?.plugins || [];
 	plugins.push(resolve())
 	plugins.push(rawLoader())
-	plugins.push(esbuild(<Options>{...defaultEsbuildOption, ...esOpt}))
+	// noinspection TypeScriptUnresolvedReference
+	const esbuildFn = isFunction(esbuild) ? esbuild : esbuild.default;
+	plugins.push(esbuildFn(<Options>{...defaultEsbuildOption, ...esOpt}))
 	const outputs = checkFormats(arg?.formats, arg);
 
 	const result = [];

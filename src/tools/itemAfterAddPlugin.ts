@@ -5,12 +5,12 @@ import {RollupOptions} from "rollup";
 
 export function itemAfterAddPlugin(options: RollupOptions[], arg?: IDefineDtsArg): RollupOptions[] {
 	const {
-		processImport,
+		replaceImport,
 		addPlugins
 	} = arg || {}
 
-	if (processImport || options.length > 1) {
-		const plugin = importReplace(isBoolean(processImport) ? undefined : processImport as any);
+	if (replaceImport || options.length > 1) {
+		const plugin = importReplace(isBoolean(replaceImport) ? undefined : replaceImport as any);
 		for (const item of options) {
 			item.plugins = [...(item.plugins || []), plugin];
 		}

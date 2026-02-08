@@ -1,35 +1,30 @@
 import {FunctionPluginHooks, OutputAsset, OutputChunk, Plugin} from "rollup";
 import {isFunction} from "gs-base";
 import {isEsFormat, isEsOrCjsFormat, margeEsImport} from "../tools";
+import {IImportReplaceFn, IImportReplaceRole, ImportReplaceRole} from "../type";
 
-export const defaultImportReplaceRole: IImportReplaceRole = {search: /^(\.{2}\/)+/, replace: './'}
+export const defaultImportReplaceRole: IImportReplaceRole = Object.freeze({
+	search: /^(\.+\/)+/,
+	replace: './',
+	ensureExtension: true
+})
 
-export type IImportReplaceFn = (name: string) => string
-
-export interface IImportReplaceRole {
-	search: RegExp
-	replace: string | ((substring: string, ...args: any[]) => string)
-}
-
-export type ImportReplaceRole = IImportReplaceRole | IImportReplaceRole[] | IImportReplaceFn
-
-const esImtReg = /((?:import|from)\s*)(['"])([^'"\s]+)\2/g
-const cjsImtReg = /require\(\s*(['"])([^'"\s]+)\1\s*\)/g
+const esImtReg = /((?:import|from)\s*)(['"])([^'"\s]+)\2|await\s+import\s*\(\s*(['"])([^'"\s]+)\4\s*\)/g
+const cjsImtReg = /(?:require|await\s+import)\s*\(\s*(['"])([^'"\s]+)\1\s*\)/g
 
 export function importReplace(replace?: ImportReplaceRole): Plugin {
 	const fn = parseFn(replace || defaultImportReplaceRole);
 	return <Plugin & Partial<FunctionPluginHooks>>{
 		name: 'import-replace',
-		generateBundle({format}, bundle) {
+		generateBundle({format, file}, bundle) {
 			if (!isEsOrCjsFormat(format)) return;
-
 			for (const chunk of Object.values(bundle) as (OutputAsset & OutputChunk)[]) {
 				let code = chunk.code || chunk.source.toString();
 				if (isEsFormat(format)) {
-					code = processEsCode(code, fn);
+					code = processEsCode(code, fn, file);
 					code = margeEsImport(code);
 				} else {
-					code = processCjsCode(code, fn);
+					code = processCjsCode(code, fn, file);
 				}
 				if (!code) continue;
 				if (chunk.code) {
@@ -42,12 +37,19 @@ export function importReplace(replace?: ImportReplaceRole): Plugin {
 	}
 }
 
-function processCjsCode(code: string, fn: IImportReplaceFn) {
-	return code.replace(cjsImtReg, (_, p1, p2) => `require('${fn(p2)}')`);
+function processCjsCode(code: string, fn: IImportReplaceFn, file: string) {
+	return code.replace(cjsImtReg, (_, p1, p2) => `require('${fn(p2, file)}')`);
 }
 
-function processEsCode(code, fn: IImportReplaceFn) {
-	return code.replace(esImtReg, (_, p1, p2, p3) => `${p1}'${fn(p3)}'`);
+function processEsCode(code, fn: IImportReplaceFn, file: string) {
+	return code.replace(esImtReg, (_, p1, p2, p3, p4, p5) => {
+		if (p3) {
+			return `${p1}'${fn(p3, file)}'`
+		} else if (p5) {
+			return `await import('${fn(p5, file)}')`
+		}
+
+	});
 	// return code.replace(esImtReg, (_, p1, p2, p3) => {
 	// 	console.log(_,`${p1}'${fn(p3)}'`)
 	// 	return `${p1}'${fn(p3)}'`
@@ -59,11 +61,20 @@ function parseFn(replace: ImportReplaceRole): IImportReplaceFn {
 		return replace as IImportReplaceFn;
 	}
 	const roles = Array.isArray(replace) ? replace : [replace] as IImportReplaceRole[];
-	return (name) => {
-		for (const item of roles) {
-			if (item.search.test(name)) {
-				return name.replace(item.search, item.replace as any)
+	return (name, file) => {
+		for (const {search, replace, ensureExtension} of roles) {
+			if (!search.test(name)) {
+				continue
 			}
+			name = name.replace(search, replace as any);
+			if (!ensureExtension) {
+				return name;
+			}
+			const [ext] = file.match(/(?:\.\S+){1,2}$/)
+			if (name.endsWith(ext)) {
+				return name;
+			}
+			return `${name}${ext}`
 		}
 		return name;
 	}

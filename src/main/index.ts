@@ -10,7 +10,6 @@ import {runProgrammaticDefault} from "./runProgrammaticDefault";
 import {initProject} from "./initProject";
 
 export async function index() {
-
 	const args = normalizeArgs(process.argv.slice(2));
 	const has = (f: string) => args.includes(f);
 
