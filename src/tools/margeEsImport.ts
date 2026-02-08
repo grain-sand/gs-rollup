@@ -1,202 +1,308 @@
+// 主函数：合并ES模块导入语句
 export function margeEsImport(code: string): string {
-  // 正则表达式匹配 ES 导入语句，修复冒号路径截断问题
-  const importRegex = /^\s*import\s+([\s\S]*?)\s+from\s+(['"])(.+?)\2\s*;?\s*$/gm;
+	// 检查是否是单行代码（minified）
+	if (!code.includes('\n')) {
+		return processSingleLine(code);
+	}
 
-  // 存储导入信息的映射，key 为模块路径，value 为对象包含所有导入类型
-  const importMap = new Map<string, {
-    defaultImports: { name: string; lineIndex: number }[];
-    namedImports: Set<string>;
-    namespaceImports: { name: string; lineIndex: number }[];
-    allImportLines: Set<number>;
-  }>();
+	// 将代码按行分割
+	const lines = code.split('\n');
+	const resultLines: string[] = [];
+	
+	// 按模块路径分组的导入信息
+	const moduleImports = new Map<string, {
+		defaultImports: string[];
+		namedImports: string[];
+		namespaceImport: string | undefined;
+		isProcessed: boolean;
+	}>();
 
-  // 存储所有行，包括空行
-  const allLines = code.split('\n');
+	// 第一遍：收集导入语句信息
+	for (const line of lines) {
+		const trimmedLine = line.trim();
+		if (!trimmedLine.startsWith('import ')) {
+			continue;
+		}
 
-  // 第一步：收集所有导入信息并记录导入行的位置
-  for (let i = 0; i < allLines.length; i++) {
-    const line = allLines[i];
-    // 重置正则表达式的 lastIndex
-    importRegex.lastIndex = 0;
-    // 尝试匹配导入语句
-    const match = importRegex.exec(line);
-    if (match) {
-      const [, importContent, , modulePath] = match;
+		// 解析导入语句
+		const importInfo = parseImportStatement(line);
+		if (!importInfo) {
+			// 如果解析失败，将该行保留
+			resultLines.push(line);
+			continue;
+		}
 
-      // 获取或创建模块的导入信息
-      if (!importMap.has(modulePath)) {
-        importMap.set(modulePath, {
-          defaultImports: [],
-          namedImports: new Set<string>(),
-          namespaceImports: [],
-          allImportLines: new Set<number>()
-        });
-      }
+		const { modulePath, type, name, namedImports } = importInfo;
 
-      const moduleInfo = importMap.get(modulePath)!;
-      // 记录所有导入行
-      moduleInfo.allImportLines.add(i);
+		// 初始化模块导入信息
+		if (!moduleImports.has(modulePath)) {
+			moduleImports.set(modulePath, {
+				defaultImports: [],
+				namedImports: [],
+				namespaceImport: undefined,
+				isProcessed: false
+			});
+		}
 
-      // 解析导入内容
-      if (importContent.startsWith('* as ')) {
-        // 命名空间导入
-        const namespaceName = importContent.slice(5).trim();
-        moduleInfo.namespaceImports.push({ name: namespaceName, lineIndex: i });
-      } else if (importContent.startsWith('{')) {
-        // 只有命名导入
-        const namedParts = importContent.slice(1, -1).split(',');
-        namedParts.forEach(part => {
-          const trimmedPart = part.trim();
-          if (trimmedPart) {
-            moduleInfo.namedImports.add(trimmedPart);
-          }
-        });
-      } else if (importContent.includes(',')) {
-        // 默认导入 + 命名导入
-        const parts = importContent.split(',');
-        const defaultImport = parts[0].trim();
-        moduleInfo.defaultImports.push({ name: defaultImport, lineIndex: i });
+		const moduleInfo = moduleImports.get(modulePath)!;
 
-        if (parts.length > 1) {
-          const namedPart = parts[1].trim();
-          if (namedPart.startsWith('{')) {
-            const namedParts = namedPart.slice(1, -1).split(',');
-            namedParts.forEach(part => {
-              const trimmedPart = part.trim();
-              if (trimmedPart) {
-                moduleInfo.namedImports.add(trimmedPart);
-              }
-            });
-          }
-        }
-      } else {
-        // 只有默认导入
-        moduleInfo.defaultImports.push({ name: importContent.trim(), lineIndex: i });
-      }
-    }
-  }
+		// 根据导入类型添加到对应的数组
+		if (type === 'default') {
+			moduleInfo.defaultImports.push(name);
+		} else if (type === 'named') {
+			moduleInfo.namedImports.push(...namedImports);
+		} else if (type === 'namespace') {
+			moduleInfo.namespaceImport = name;
+		}
+	}
 
-  // 检查是否有任何模块有多个导入行，如果没有则直接返回原始字符串
-  let hasMultipleImports = false;
-  for (const moduleInfo of importMap.values()) {
-    if (moduleInfo.allImportLines.size > 1) {
-      hasMultipleImports = true;
-      break;
-    }
-  }
+	// 第二遍：构建结果，处理导入语句和非导入语句
+	let inImportBlock = false;
+	const processedModules = new Set<string>();
 
-  // 如果没有发现相同导入，直接返回原始字符串
-  if (!hasMultipleImports) {
-    return code;
-  }
+	for (const line of lines) {
+		const trimmedLine = line.trim();
+		
+		// 检查是否是导入语句
+		if (trimmedLine.startsWith('import ')) {
+			const importInfo = parseImportStatement(line);
+			if (!importInfo) {
+				// 解析失败的导入语句，直接保留
+				resultLines.push(line);
+				continue;
+			}
 
-  // 第二步：生成合并后的导入语句并记录需要保留的行
-  const linesToKeep = new Map<number, string>();
-  const linesToRemove = new Set<number>();
+			const { modulePath } = importInfo;
+			const moduleInfo = moduleImports.get(modulePath)!;
 
-  for (const [modulePath, moduleInfo] of importMap.entries()) {
-    // 收集所有导入行
-    const importLines = Array.from(moduleInfo.allImportLines).sort((a, b) => a - b);
+			// 如果这个模块的导入还没有处理过
+			if (!processedModules.has(modulePath)) {
+				// 生成合并后的导入语句
+				const mergedImport = generateMergedImport(modulePath, moduleInfo);
+				if (mergedImport) {
+					resultLines.push(...mergedImport.split('\n'));
+				}
+				processedModules.add(modulePath);
+			}
+			
+			inImportBlock = true;
+		} else {
+			// 非导入语句
+			resultLines.push(line);
+			inImportBlock = false;
+		}
+	}
 
-    if (importLines.length === 0) continue;
+	// 重建代码字符串，确保每行末尾的换行符正确
+	return resultLines.join('\n');
+}
 
-    // 检查是否有命名空间导入
-    if (moduleInfo.namespaceImports.length > 0) {
-      // 对于命名空间导入，保留所有命名空间导入行，并移除其他导入行
-      for (const imp of moduleInfo.namespaceImports) {
-        // 保留命名空间导入行
-        linesToKeep.set(imp.lineIndex, `import * as ${imp.name} from '${modulePath}';`);
-      }
+// 解析导入语句
+function parseImportStatement(line: string): {
+	modulePath: string;
+	type: 'default' | 'named' | 'namespace';
+	name: string;
+	namedImports?: string[];
+} | null {
+	// 匹配命名空间导入
+	const namespaceRegex = /^\s*import\s+\*\s+as\s+([\w$]+)\s+from\s+(['"])([^'"]+)\2\s*;?\s*$/;
+	const namespaceMatch = namespaceRegex.exec(line);
+	if (namespaceMatch) {
+		return {
+			modulePath: namespaceMatch[3],
+			type: 'namespace',
+			name: `* as ${namespaceMatch[1]}` // 保留完整的命名空间导入语法
+		};
+	}
 
-      // 移除所有非命名空间导入行
-      for (const lineIndex of importLines) {
-        const isNamespaceImport = moduleInfo.namespaceImports.some(imp => imp.lineIndex === lineIndex);
-        if (!isNamespaceImport) {
-          linesToRemove.add(lineIndex);
-        }
-      }
-    }
-    // 检查是否有多个不同名称的默认导入
-    else if (moduleInfo.defaultImports.length > 1) {
-      // 保留所有默认导入行，但只将命名导入添加到第一个默认导入中
-      const namedImportsStr = Array.from(moduleInfo.namedImports).join(', ');
+	// 匹配默认导入 + 命名导入
+	const defaultAndNamedRegex = /^\s*import\s+([\w$]+)\s*,\s*\{([^}]*)\}\s+from\s+(['"])([^'"]+)\3\s*;?\s*$/;
+	const defaultAndNamedMatch = defaultAndNamedRegex.exec(line);
+	if (defaultAndNamedMatch) {
+		const namedImports = defaultAndNamedMatch[2].split(',')
+			.map(name => name.trim())
+			.filter(Boolean);
+		return {
+			modulePath: defaultAndNamedMatch[4],
+			type: 'named',
+			name: defaultAndNamedMatch[1],
+			namedImports
+		};
+	}
 
-      // 为第一个默认导入行生成合并后的语句
-      const firstDefaultImport = moduleInfo.defaultImports[0];
-      let firstImportStmt = `import ${firstDefaultImport.name}`;
+	// 匹配仅命名导入
+	const namedOnlyRegex = /^\s*import\s*\{([^}]*)\}\s+from\s+(['"])([^'"]+)\2\s*;?\s*$/;
+	const namedOnlyMatch = namedOnlyRegex.exec(line);
+	if (namedOnlyMatch) {
+		const namedImports = namedOnlyMatch[1].split(',')
+			.map(name => name.trim())
+			.filter(Boolean);
+		return {
+			modulePath: namedOnlyMatch[3],
+			type: 'named',
+			name: '',
+			namedImports
+		};
+	}
 
-      if (moduleInfo.namedImports.size > 0) {
-        firstImportStmt += `, { ${namedImportsStr} }`;
-      }
+	// 匹配仅默认导入
+	const defaultOnlyRegex = /^\s*import\s+([\w$]+)\s+from\s+(['"])([^'"]+)\2\s*;?\s*$/;
+	const defaultOnlyMatch = defaultOnlyRegex.exec(line);
+	if (defaultOnlyMatch) {
+		return {
+			modulePath: defaultOnlyMatch[3],
+			type: 'default',
+			name: defaultOnlyMatch[1]
+		};
+	}
 
-      firstImportStmt += ` from '${modulePath}';`;
-      linesToKeep.set(firstDefaultImport.lineIndex, firstImportStmt);
+	return null;
+}
 
-      // 为其他默认导入行生成简单的导入语句（不包含命名导入）
-      for (let i = 1; i < moduleInfo.defaultImports.length; i++) {
-        const imp = moduleInfo.defaultImports[i];
-        const importStmt = `import ${imp.name} from '${modulePath}';`;
-        linesToKeep.set(imp.lineIndex, importStmt);
-      }
+// 生成合并后的导入语句
+function generateMergedImport(modulePath: string, info: {
+	defaultImports: string[];
+	namedImports: string[];
+	namespaceImport: string | undefined;
+	isProcessed: boolean;
+}): string {
+	// 如果有命名空间导入，直接返回该导入语句
+	if (info.namespaceImport) {
+		return `import ${info.namespaceImport} from '${modulePath}';`;
+	}
 
-      // 移除所有非默认导入行
-      for (const lineIndex of importLines) {
-        const isDefaultImport = moduleInfo.defaultImports.some(imp => imp.lineIndex === lineIndex);
-        if (!isDefaultImport) {
-          linesToRemove.add(lineIndex);
-        }
-      }
-    }
-    // 普通情况，合并所有导入到第一行
-    else {
-      // 保留第一行作为基础，其他行标记为删除
-      const firstLineIndex = importLines[0];
-      for (let i = 1; i < importLines.length; i++) {
-        linesToRemove.add(importLines[i]);
-      }
+	let result = '';
+	const importParts: string[] = [];
 
-      // 构建合并后的导入语句
-      let importStmt = 'import ';
-      const parts: string[] = [];
+	// 添加默认导入（只保留第一个）
+	if (info.defaultImports.length > 0) {
+		importParts.push(info.defaultImports[0]);
+	}
 
-      // 添加默认导入（保留所有不同的默认导入）
-      if (moduleInfo.defaultImports.length > 0) {
-        parts.push(...moduleInfo.defaultImports.map(imp => imp.name));
-      }
+	// 添加命名导入
+	if (info.namedImports.length > 0) {
+		importParts.push(`{ ${info.namedImports.join(', ')} }`);
+	}
 
-      // 添加命名导入
-      if (moduleInfo.namedImports.size > 0) {
-        const namedImportsStr = Array.from(moduleInfo.namedImports).join(', ');
-        parts.push(`{ ${namedImportsStr} }`);
-      }
+	// 生成合并后的导入语句
+	if (importParts.length > 0) {
+		result = `import ${importParts.join(', ')} from '${modulePath}';`;
+	}
 
-      // 合并所有部分
-      importStmt += parts.join(', ');
-      importStmt += ` from '${modulePath}';`;
+	// 如果有多个默认导入，添加额外的导入语句
+	for (let i = 1; i < info.defaultImports.length; i++) {
+		result += `\nimport ${info.defaultImports[i]} from '${modulePath}';`;
+	}
 
-      // 记录要保留的行
-      linesToKeep.set(firstLineIndex, importStmt);
-    }
-  }
+	return result;
+}
 
-  // 第三步：构建最终结果
-  const result: string[] = [];
+// 处理单行中的多个导入语句（minified code）
+function processSingleLine(code: string): string {
+	// 查找所有导入语句的位置
+	const importRegex = /import\s+(?:\*\s+as\s+[\w$]+|[\w$]+|\{[^}]*\})\s+from\s+(['"])([^'"]+)\1\s*;?/g;
+	const importMatches: Array<{start: number; end: number; stmt: string}> = [];
+	
+	let match;
+	while ((match = importRegex.exec(code)) !== null) {
+		importMatches.push({
+			start: match.index,
+			end: match.index + match[0].length,
+			stmt: match[0]
+		});
+	}
 
-  for (let i = 0; i < allLines.length; i++) {
-    // 如果该行需要删除，则跳过
-    if (linesToRemove.has(i)) {
-      continue;
-    }
+	if (importMatches.length === 0) {
+		return code;
+	}
 
-    // 如果该行是导入行且有合并后的语句，则使用合并后的语句
-    if (linesToKeep.has(i)) {
-      result.push(linesToKeep.get(i)!);
-    } else {
-      // 否则使用原始行
-      result.push(allLines[i]);
-    }
-  }
+	// 按模块路径分组的导入信息
+	const moduleImports = new Map<string, {
+		defaultImports: string[];
+		namedImports: string[];
+		namespaceImport: string | undefined;
+	}>();
 
-  // 合并所有行并返回
-  return result.join('\n');
+	// 解析所有导入语句
+	for (const { stmt } of importMatches) {
+		const importInfo = parseImportStatement(stmt);
+		if (!importInfo) {
+			continue;
+		}
+
+		const { modulePath, type, name, namedImports } = importInfo;
+
+		// 初始化模块导入信息
+		if (!moduleImports.has(modulePath)) {
+			moduleImports.set(modulePath, {
+				defaultImports: [],
+				namedImports: [],
+				namespaceImport: undefined
+			});
+		}
+
+		const moduleInfo = moduleImports.get(modulePath)!;
+
+		// 根据导入类型添加到对应的数组
+		if (type === 'default') {
+			moduleInfo.defaultImports.push(name);
+		} else if (type === 'named') {
+			if (name) {
+				moduleInfo.defaultImports.push(name);
+			}
+			if (namedImports) {
+				moduleInfo.namedImports.push(...namedImports);
+			}
+		} else if (type === 'namespace') {
+			moduleInfo.namespaceImport = name;
+		}
+	}
+
+	// 构建结果字符串
+	let result = '';
+	let lastIndex = 0;
+
+	// 按出现顺序处理导入模块
+	const processedModules = new Set<string>();
+	
+	// 先添加导入语句前的内容
+	if (importMatches.length > 0) {
+		result += code.slice(0, importMatches[0].start);
+	}
+
+	// 处理导入语句
+	for (const { stmt } of importMatches) {
+		// 解析当前导入语句以获取模块路径
+		const importInfo = parseImportStatement(stmt);
+		if (!importInfo) {
+			// 如果解析失败，直接添加该语句
+			result += stmt;
+			continue;
+		}
+
+		const { modulePath } = importInfo;
+
+		// 如果这个模块的导入还没有处理过
+		if (!processedModules.has(modulePath)) {
+			// 生成合并后的导入语句
+			const moduleInfo = moduleImports.get(modulePath)!;
+			const mergedImport = generateMergedImport(modulePath, {
+				...moduleInfo,
+				isProcessed: false
+			});
+			
+			if (mergedImport) {
+				result += mergedImport;
+			}
+			processedModules.add(modulePath);
+		}
+	}
+
+	// 添加导入语句后的内容
+	if (importMatches.length > 0) {
+		const lastImport = importMatches[importMatches.length - 1];
+		result += code.slice(lastImport.end);
+	}
+
+	return result;
 }
