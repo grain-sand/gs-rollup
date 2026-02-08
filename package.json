@@ -1,25 +1,49 @@
 {
   "name": "gs-rollup",
   "version": "1.0.0",
+  "license": "MIT",
+  "author": {
+	"name": "grain-sand"
+  },
   "scripts": {
 	"build": "tsx src/main/index.ts -c",
 	"test": "vitest run",
 	"test:install": "tsx src/main/index.ts -i"
   },
   "dependencies": {
+	"@rollup/plugin-node-resolve": "^16.0.1",
+	"rollup-plugin-copy": "^3.5.0",
+	"rollup-plugin-esbuild": "^6.2.1",
+	"type-fest": "^5.4.3",
+	"esbuild": "0.25.9",
+	"gs-base": "^0.1.20",
+	"rollup": "^4.50.1",
+	"tsx": "^4.21.0"
+  },
+  "optionalDependencies": {
+	"rollup-plugin-dts": "^6.2.3",
+	"typescript": "^5.9.3"
   },
   "devDependencies": {
-	"@rollup/plugin-node-resolve": "^16.0.1",
-	"esbuild": "0.25.9",
-	"rollup": "^4.50.1",
-	"rollup-plugin-copy": "^3.5.0",
 	"rollup-plugin-dts": "^6.2.3",
-	"rollup-plugin-esbuild": "^6.2.1",
-	"tsx": "^4.21.0",
 	"typescript": "^5.9.3",
-	"vitest": "^3.2.4",
-	"gs-base": "^0.1.20",
-	"type-fest": "^5.4.3"
+	"vitest": "^3.2.4"
   },
-  "type": "module"
+  "type": "module",
+  "keywords": [
+	"grain-sand",
+	"gs-rollup",
+	"rollup",
+	"@types/rollup",
+	"打包工具",
+	"build tool"
+  ],
+  "homepage": "https://github.com/grain-sand/gs-rollup",
+  "repository": {
+	"type": "git",
+	"url": "https://github.com/grain-sand/gs-rollup.git"
+  },
+  "bin": {
+	"gs-rollup": "dist/bin/main"
+  }
 }

@@ -3,7 +3,7 @@ import dts from "rollup-plugin-dts";
 import {IDefineDtsArg} from "../type";
 import {formatInput, getExternalByInput, itemAfterAddPlugin} from "../tools";
 import {defineCopy, defineOutput} from "../core";
-import {packageJson} from "../plugins/package-json";
+import {packageJson} from "../plugins";
 
 export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 	const {

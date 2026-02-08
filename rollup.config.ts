@@ -13,20 +13,9 @@ const input = [
 
 export default <RollupOptions[]>[
 	...defineDts({
-		input, buildPackageJson: {
-			overwriteProps: {
-				keywords: ['grain-sand', 'gs-rollup', 'rollup', '@types/rollup', '打包工具', 'build tool'],
-				homepage: 'https://github.com/grain-sand/gs-rollup',
-				repository: {
-					type: 'git',
-					url: 'https://github.com/grain-sand/gs-rollup.git'
-				}
-			},
-			author: "grain-sand",
-			license: "MIT",
-			bin: {
-				'gs-rollup': 'dist/bin/main'
-			}
+		input,
+		buildPackageJson: {
+			deleteProps: /^(devDependencies|scripts)$/
 		}
 	}),
 	...defineJs({input}),

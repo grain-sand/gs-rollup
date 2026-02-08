@@ -4,7 +4,11 @@ import {defineJs} from "../core";
 export async function runProgrammaticDefault() {
 	const {rollup} = await import('rollup')
 	for (const cfg of [
-		...defineDts(),
+		...defineDts({
+			buildPackageJson: {
+				deleteProps:/^(devDependencies|scripts)$/
+			}
+		}),
 		...defineJs()
 	]) {
 		const bundle = await rollup(cfg)

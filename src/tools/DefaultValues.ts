@@ -1,5 +1,5 @@
 import {ExternalOption, InputOption} from "rollup";
-import {detectEntry} from "./index";
+import {detectEntry} from "./detectEntry";
 
 export class DefaultValues {
 
