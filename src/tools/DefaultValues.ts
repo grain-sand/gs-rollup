@@ -1,5 +1,6 @@
 import {ExternalOption, InputOption, ModuleFormat} from "rollup";
-import {detectRollupOption, IDetectedOption} from "./detectRollupOption";
+import {detectRollupOption} from "./detectRollupOption";
+import {IDetectedOption} from "../type";
 
 export class DefaultValues {
 
