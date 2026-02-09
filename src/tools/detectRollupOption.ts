@@ -6,7 +6,7 @@ import path from "path";
 
 const defaultInput: InputOption = ["src/index.ts"];
 
-export function detectRollupOption(pattern?: string | RegExp): IDetectedOption {
+export function detectRollupOption(pattern?: string | RegExp, showRegex?: boolean): IDetectedOption {
 
 	// 尝试根据package.json中的信息分析
 	try {
@@ -21,15 +21,38 @@ export function detectRollupOption(pattern?: string | RegExp): IDetectedOption {
 	try {
 
 		const indexFiles: string[] = [];
-		
+
 		// 读取.gitignore文件
 		const gitignorePatterns = readGitignore();
-		
+
 		// 定义要跳过的目录
 		const skipDirs = ['node_modules', 'dist', 'lib', ...gitignorePatterns];
-		
+
+		// 处理文件匹配模式
+		let filePattern: RegExp;
+		if (typeof pattern === 'string') {
+			// 支持字符串格式的正则表达式，如 '/index\.ts$/i'
+			if (pattern.startsWith('/') && pattern.lastIndexOf('/') > 0) {
+				const regexParts = pattern.match(/^\/(.*)\/([gimuy]*)$/);
+				if (regexParts) {
+					const [, regexPattern, flags] = regexParts;
+					filePattern = new RegExp(regexPattern, flags);
+				} else {
+					filePattern = new RegExp(pattern);
+				}
+			} else {
+				filePattern = new RegExp(pattern);
+			}
+		} else {
+			filePattern = pattern || /index\.ts$/;
+		}
+
+		if (showRegex) {
+			console.log(`Use pattern: \x1b[1;34m${filePattern}\x1b[0m scan directory .`);
+		}
+
 		// 递归扫描目录，最多扫描3级（根目录+2级子目录）
-		scanDirectory('.', 0, indexFiles, skipDirs, pattern);
+		scanDirectory('.', 0, indexFiles, skipDirs, filePattern);
 
 		// 如果找到匹配模式的文件，使用这些文件作为input
 		if (indexFiles.length > 0) {
@@ -74,29 +97,10 @@ function readGitignore(): string[] {
 /**
  * 递归扫描目录中的匹配文件
  */
-function scanDirectory(dir: string, level: number, indexFiles: string[], skipDirs: string[], pattern?: string | RegExp): void {
+function scanDirectory(dir: string, level: number, indexFiles: string[], skipDirs: string[], pattern: RegExp): void {
 	// 最多扫描3级目录
 	if (level > 2) {
 		return;
-	}
-
-	// 处理文件匹配模式
-	let filePattern: RegExp;
-	if (typeof pattern === 'string') {
-		// 支持字符串格式的正则表达式，如 '/index\.ts$/i'
-		if (pattern.startsWith('/') && pattern.lastIndexOf('/') > 0) {
-			const regexParts = pattern.match(/^\/(.*)\/([gimuy]*)$/);
-			if (regexParts) {
-				const [, regexPattern, flags] = regexParts;
-				filePattern = new RegExp(regexPattern, flags);
-			} else {
-				filePattern = new RegExp(pattern);
-			}
-		} else {
-			filePattern = new RegExp(pattern);
-		}
-	} else {
-		filePattern = pattern || /index\.ts$/;
 	}
 
 	const files = fs.readdirSync(dir);
@@ -108,7 +112,7 @@ function scanDirectory(dir: string, level: number, indexFiles: string[], skipDir
 		// 标准化路径用于比较
 		const normalizedPath = filePath.replace(/\\/g, '/');
 
-		if (stat.isFile() && filePattern.test(normalizedPath)) {
+		if (stat.isFile() && pattern.test(normalizedPath)) {
 			// 如果文件匹配模式，添加到结果中
 			indexFiles.push(normalizedPath);
 		} else if (stat.isDirectory()) {
@@ -118,16 +122,16 @@ function scanDirectory(dir: string, level: number, indexFiles: string[], skipDir
 			// 3. 检查 .gitignore 中的忽略规则
 			const isHiddenDir = file.startsWith('.');
 			const isTestDir = file === 'test' || file === 'tests';
-			const shouldSkip = isHiddenDir || isTestDir || skipDirs.some(pattern => {
+			const shouldSkip = isHiddenDir || isTestDir || skipDirs.some(skipPattern => {
 				// 简单的模式匹配，支持目录匹配
-				if (pattern.endsWith('/')) {
-					return normalizedPath === pattern.slice(0, -1) || normalizedPath.startsWith(pattern);
+				if (skipPattern.endsWith('/')) {
+					return normalizedPath === skipPattern.slice(0, -1) || normalizedPath.startsWith(skipPattern);
 				}
-				return normalizedPath === pattern;
+				return normalizedPath === skipPattern;
 			});
 			if (!shouldSkip) {
 				// 递归扫描子目录
-				scanDirectory(filePath, level + 1, indexFiles, skipDirs);
+				scanDirectory(filePath, level + 1, indexFiles, skipDirs, pattern);
 			}
 		}
 	}

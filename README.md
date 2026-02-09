@@ -22,7 +22,7 @@ gs-rollup -c
 ### Generate Configuration File
 
 ```sh
-gs-rollup -i
+gs-rollup -t
 ```
 
 ### Configuration

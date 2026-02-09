@@ -19,7 +19,7 @@ gs-rollup -c
 ### 生成配置文件
 
 ```sh
-gs-rollup -i
+gs-rollup -t
 ```
 
 ### 配置

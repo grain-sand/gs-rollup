@@ -6,4 +6,6 @@ import {IDefineArg} from "./IDefineArg";
 export interface IGsRollupDefaults extends IDetectedOption, Pick<IDefineArg, 'includeInputDir' | 'includeInputSrc'> {
 	external: ExternalOption
 	formatInput?: FormatInputFn
+
+	init(showPattern?: boolean): IDetectedOption
 }

@@ -18,9 +18,9 @@ const tsConfig = {
 	}
 }
 
-export async function initProject() {
+export async function initProject(args: string[]) {
 	try {
-		writeCfg()
+		writeCfg(args)
 	} catch (e) {
 		console.error('init project failed', e)
 	}
@@ -28,13 +28,19 @@ export async function initProject() {
 }
 
 function writeTsCfg() {
-	if (existsSync(tsCfgPath)) return
+	if (existsSync(tsCfgPath)) {
+		console.log('\x1b[32mtsconfig.json already exists\x1b[0m')
+		return
+	}
 	writeFileSync(tsCfgPath, JSON.stringify(tsConfig, null, 2))
 }
 
-function writeCfg() {
-	if (existsSync(cfgPath)) return
-	const detectedOption = detectRollupOption();
+function writeCfg(args: string[]) {
+	if (existsSync(cfgPath)) {
+		console.log('\x1b[32mrollup.config.ts already exists\x1b[0m')
+	}
+	const pattern = args.length>1 ? args.pop() : undefined;
+	const detectedOption = detectRollupOption(pattern, true);
 	const out = [
 		"import { RollupOptions } from 'rollup'",
 		"import {defineJs, defineDts, GsRollupDefaults as Defaults} from 'gs-rollup'",

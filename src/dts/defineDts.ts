@@ -43,14 +43,18 @@ function definePkgPlugin(arg?: IDefineDtsArg) {
 		buildPackageJson,
 		outputBase,
 		input,
-		outputCodeDir
+		outputCodeDir,
+		includeInputSrc,
+		includeInputDir
 	} = arg || {};
 	return packageJson({
 		...{
 			outputBase,
 			exports: {
 				input,
-				outputCodeDir
+				outputCodeDir,
+				includeInputDir,
+				includeInputSrc,
 			}
 		},
 		...buildPackageJson

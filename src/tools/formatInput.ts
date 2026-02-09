@@ -2,7 +2,7 @@ import {isObject, isString} from "gs-base";
 import {join, parse} from "node:path";
 import {IDefineArg} from "../type";
 
-export function formatInput(arg?: IDefineArg): Record<string, string> {
+export function formatInput(arg: IDefineArg): Record<string, string> {
 	const {input, includeInputDir, includeInputSrc} = arg || {};
 	if (isString(input)) {
 		return {
@@ -26,21 +26,31 @@ export function formatInput(arg?: IDefineArg): Record<string, string> {
 
 function parseName(input: string, includeInputDir: boolean, includeInputSrc: boolean): string {
 	const {name, dir} = parse(input);
+	const normalizeDir = dir.replace(/^\.+[\/\\]/, '')
 	let result: string;
 	if (includeInputDir) {
-		result = join(dir, name);
+		switch (name) {
+			case 'index':
+				if (normalizeDir === 'src') {
+					result = includeInputSrc ? join(normalizeDir, name) : name
+				} else {
+					result = normalizeDir;
+				}
+				break
+			default:
+				result = join(normalizeDir, name)
+		}
 		if (!includeInputSrc) {
 			result = result.replace(/^src[\/\\]/, '');
 		}
-		result = result.replace(/[\\/]+/g, '/');
 	} else {
 		switch (name) {
 			case 'index':
-				result = dir === 'src' ? name : dir.replace(/^.+[\/\\]/, '');
+				result = normalizeDir === 'src' ? name : normalizeDir.replace(/^.+[\/\\]/, '');
 				break;
 			default:
 				result = name;
 		}
 	}
-	return result;
+	return result.replace(/[\\/]+/g, '/');
 }

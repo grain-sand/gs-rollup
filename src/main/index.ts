@@ -20,7 +20,7 @@ export async function index() {
 	}
 
 	if (has("--init")) {
-		await initProject();
+		await initProject(args);
 		return;
 	}
 

@@ -13,7 +13,7 @@ export interface IPackageJsonExport {
 
 export type PackageJsonExport = string | string[] | IPackageJsonExport
 
-export interface IPackageJsonArg {
+export interface IPackageJsonArg  {
 	minify?: boolean
 	outputBase?: string
 	input?: string

@@ -8,7 +8,7 @@ export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 	static external: ExternalOption = [/^node:|dynamic|(?:^[^/.]{2}.*[^.]{4}|\.(vue|scss))$/]
 
 	static formatInput: FormatInputFn = formatInput
-	
+
 	static includeInputDir = false
 
 	static includeInputSrc = false
@@ -16,7 +16,7 @@ export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 	static #_detected?: IDetectedOption
 
 	static get detected() {
-		return this.#_detected || (this.#_detected = detectRollupOption());
+		return this.#_detected || this.init();
 	}
 
 	static get input(): InputOption {
@@ -59,5 +59,7 @@ export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 		this.detected.outputCodeDir = value
 	}
 
-
+	static init(showPattern?: boolean): IDetectedOption {
+		return this.#_detected || (this.#_detected = detectRollupOption(undefined, showPattern));
+	}
 }

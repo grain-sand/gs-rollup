@@ -75,13 +75,15 @@ function processExports(pkg: PackageJson, arg: IPackageJsonArg) {
 	const {exports: exp = {}, formatInput = GsRollupDefaults.formatInput} = arg || {};
 	const exOpn = (Array.isArray(exp) || isString(exp) ? {input: exp} : exp) as IPackageJsonExport;
 	const {input = GsRollupDefaults.input} = exOpn;
-	const inputRecord = formatInput({...exOpn, input} as any);
-	const exports: Record<string, Record<'types' | 'import' | 'require', string>> = {};
 	const {
 		formats = ['cjs', 'es', '.d.ts'],
 		outputCodeDir = GsRollupDefaults.outputCodeDir,
-		'default': dft = 'index'
+		'default': dft = 'index',
+		includeInputDir = GsRollupDefaults.includeInputDir,
+		includeInputSrc = GsRollupDefaults.includeInputSrc,
 	}: IPackageJsonExport = exOpn;
+	const inputRecord = formatInput({...exOpn, input, includeInputDir, includeInputSrc} as any);
+	const exports: Record<string, Record<'types' | 'import' | 'require', string>> = {};
 
 	for (const k of Object.keys(inputRecord)) {
 		const name = k === dft ? '.' : `./${k}`;

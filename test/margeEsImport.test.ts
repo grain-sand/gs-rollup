@@ -1,5 +1,7 @@
+// noinspection TypeScriptUnresolvedReference
+
 import {describe, expect, it} from 'vitest';
-import {margeEsImport} from '../src/tools';
+import {margeEsImport} from '../src';
 
 describe('margeEsImport', () => {
 	it('should merge multiple imports from the same module', () => {

@@ -1,7 +1,9 @@
 import {defineJs} from "../core";
+import {GsRollupDefaults} from "../tools";
 
 export async function runProgrammaticDefault() {
 	const {rollup} = await import('rollup')
+	GsRollupDefaults.init(true)
 	const dts = [];
 	try {
 		const {defineDts} = await import('../dts')
