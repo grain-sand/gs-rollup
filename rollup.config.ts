@@ -14,7 +14,6 @@ export default <RollupOptions[]>[
 	...defineDts({
 		input,
 		buildPackageJson: {
-			deleteProps: /^(devDependencies|scripts)$/,
 			overwriteProps: {
 				bin: './bin/main.cjs'
 			}

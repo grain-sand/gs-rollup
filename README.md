@@ -1,6 +1,6 @@
-# gs-rollup
+# gs-rollup [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 This is a simple wrapper for rollup, mainly used for quickly packaging TypeScript modules. It can be used with zero configuration in most cases. It will automatically copy documentation and rebuild package.json to the packaging directory.
 
@@ -22,7 +22,7 @@ gs-rollup -c
 ### Generate Configuration File
 
 ```sh
-gs-rollup -d
+gs-rollup -i
 ```
 
 ### Configuration

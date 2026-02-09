@@ -1,6 +1,4 @@
-# gs-rollup
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# gs-rollup [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 这是一个 rollup 的简单包装器，主要快速打包TS模块，大多数情况下可以零配置打包。会自动拷贝文档并重建 package.json 到打包目录。
 
@@ -21,7 +19,7 @@ gs-rollup -c
 ### 生成配置文件
 
 ```sh
-gs-rollup -d
+gs-rollup -i
 ```
 
 ### 配置

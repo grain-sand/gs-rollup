@@ -7,13 +7,13 @@ import {formatOutput} from "./formatOutput";
 import {DefaultValues} from "./DefaultValues";
 import {ModuleFormat} from "rollup";
 import {isCjsFormat, isEsFormat} from "./isEsOrCjsFormat";
+import {basename} from "node:path";
 
 export const defaultPackageJsonFileName = 'package.json';
 
-// console.log(processPackageJson({
-// 	deleteProps: /scripts|dependencies/,
-// 	deleteChildProps: {devDependencies: /typescript|vitest/}
-// }))
+const defaultProcessPackageJsonArg: IPackageJsonArg = Object.freeze({deleteProps: /^(devDependencies|scripts)$/})
+//
+// console.log(processPackageJson())
 
 export function processPackageJson(arg?: IPackageJsonArg) {
 	const {
@@ -25,8 +25,14 @@ export function processPackageJson(arg?: IPackageJsonArg) {
 		before,
 		exports = DefaultValues.input,
 		after
-	} = arg || {};
-	let pkg: PackageJson = JSON.parse(fs.readFileSync(input, 'utf8'));
+	} = {...defaultProcessPackageJsonArg, ...arg};
+	let pkg: PackageJson = {
+		...{
+			name: defaultName(),
+			version: '0.0.0',
+		},
+		...JSON.parse(fs.readFileSync(input, 'utf8')),
+	};
 	const bv = before?.(pkg);
 	if (bv) pkg = bv;
 
@@ -67,7 +73,7 @@ function processExports(pkg: PackageJson, arg: IPackageJsonArg) {
 	const exOpn = (Array.isArray(exp) || isString(exp) ? {input: exp} : exp) as IPackageJsonExport;
 	const {input = DefaultValues.input} = exOpn;
 	const inputRecord = formatInput({...exOpn, input} as any);
-	const exports: Record<string, Record<'types' | 'import' | 'require', string>>  = {};
+	const exports: Record<string, Record<'types' | 'import' | 'require', string>> = {};
 	const {
 		formats = ['cjs', 'es', '.d.ts'],
 		outputCodeDir = DefaultValues.outputCodeDir,
@@ -106,4 +112,12 @@ function formatExports(file: string, outputCodeDir: string, formats: (ModuleForm
 		}
 	}
 	return result;
+}
+
+function defaultName() {
+	try {
+		return basename(process.cwd()).replace(/([a-zA-Z])_?([A-Z])/g, '$1-$2').toLowerCase()
+	} catch {
+		return 'package-name'
+	}
 }
