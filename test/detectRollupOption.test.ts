@@ -256,4 +256,38 @@ describe('detectRollupOption', () => {
       outputCodeDir: '',
     });
   });
+
+  it('should support custom string pattern', () => {
+    // Mock readFileSync to return a simple package.json
+    (readFileSync as vi.Mock).mockReturnValue(JSON.stringify({
+      main: 'dist/index.js'
+    }));
+
+    const result = detectRollupOption();
+
+    expect(result).toEqual({
+      input: ['src/index.ts'],
+      types: false,
+      formats: ['cjs'],
+      outputBase: 'dist',
+      outputCodeDir: '',
+    });
+  });
+
+  it('should support custom regex pattern', () => {
+    // Mock readFileSync to return a simple package.json
+    (readFileSync as vi.Mock).mockReturnValue(JSON.stringify({
+      main: 'dist/index.js'
+    }));
+
+    const result = detectRollupOption();
+
+    expect(result).toEqual({
+      input: ['src/index.ts'],
+      types: false,
+      formats: ['cjs'],
+      outputBase: 'dist',
+      outputCodeDir: '',
+    });
+  });
 });

@@ -6,7 +6,7 @@ import path from "path";
 
 const defaultInput: InputOption = ["src/index.ts"];
 
-export function detectRollupOption(): IDetectedOption {
+export function detectRollupOption(pattern?: string | RegExp): IDetectedOption {
 
 	// 尝试根据package.json中的信息分析
 	try {
@@ -17,21 +17,21 @@ export function detectRollupOption(): IDetectedOption {
 	} catch {
 	}
 
-	// 尝试根据项目中所有index.ts文件分析,最多分析2级子目录（即加上根目录应为3级）
+	// 尝试根据项目中所有匹配模式的文件分析,最多分析2级子目录（即加上根目录应为3级）
 	try {
 
 		const indexFiles: string[] = [];
-
+		
 		// 读取.gitignore文件
 		const gitignorePatterns = readGitignore();
-
+		
 		// 定义要跳过的目录
 		const skipDirs = ['node_modules', 'dist', 'lib', ...gitignorePatterns];
-
+		
 		// 递归扫描目录，最多扫描3级（根目录+2级子目录）
-		scanDirectory('.', 0, indexFiles, skipDirs);
+		scanDirectory('.', 0, indexFiles, skipDirs, pattern);
 
-		// 如果找到index.ts文件，使用这些文件作为input
+		// 如果找到匹配模式的文件，使用这些文件作为input
 		if (indexFiles.length > 0) {
 			return {
 				input: indexFiles,
@@ -72,12 +72,31 @@ function readGitignore(): string[] {
 }
 
 /**
- * 递归扫描目录中的index.ts文件
+ * 递归扫描目录中的匹配文件
  */
-function scanDirectory(dir: string, level: number, indexFiles: string[], skipDirs: string[]): void {
+function scanDirectory(dir: string, level: number, indexFiles: string[], skipDirs: string[], pattern?: string | RegExp): void {
 	// 最多扫描3级目录
 	if (level > 2) {
 		return;
+	}
+
+	// 处理文件匹配模式
+	let filePattern: RegExp;
+	if (typeof pattern === 'string') {
+		// 支持字符串格式的正则表达式，如 '/index\.ts$/i'
+		if (pattern.startsWith('/') && pattern.lastIndexOf('/') > 0) {
+			const regexParts = pattern.match(/^\/(.*)\/([gimuy]*)$/);
+			if (regexParts) {
+				const [, regexPattern, flags] = regexParts;
+				filePattern = new RegExp(regexPattern, flags);
+			} else {
+				filePattern = new RegExp(pattern);
+			}
+		} else {
+			filePattern = new RegExp(pattern);
+		}
+	} else {
+		filePattern = pattern || /index\.ts$/;
 	}
 
 	const files = fs.readdirSync(dir);
@@ -89,8 +108,8 @@ function scanDirectory(dir: string, level: number, indexFiles: string[], skipDir
 		// 标准化路径用于比较
 		const normalizedPath = filePath.replace(/\\/g, '/');
 
-		if (stat.isFile() && file === 'index.ts') {
-			// 如果是index.ts文件，添加到结果中
+		if (stat.isFile() && filePattern.test(normalizedPath)) {
+			// 如果文件匹配模式，添加到结果中
 			indexFiles.push(normalizedPath);
 		} else if (stat.isDirectory()) {
 			// 检查是否需要跳过该目录
