@@ -12,15 +12,7 @@ export const defaultPackageJsonFileName = 'package.json';
 
 // console.log(processPackageJson({
 // 	deleteProps: /scripts|dependencies/,
-// 	deleteChildProps: {devDependencies: /typescript|vitest/},
-// 	// exports: [
-// 	// 	'src/index.ts',
-// 	// 	'src/dts/index.ts',
-// 	// 	'src/type/index.ts',
-// 	// 	'src/plugins/index.ts',
-// 	// 	'src/core/index.ts',
-// 	// 	'src/tools/index.ts',
-// 	// ]
+// 	deleteChildProps: {devDependencies: /typescript|vitest/}
 // }))
 
 export function processPackageJson(arg?: IPackageJsonArg) {
@@ -75,7 +67,7 @@ function processExports(pkg: PackageJson, arg: IPackageJsonArg) {
 	const exOpn = (Array.isArray(exp) || isString(exp) ? {input: exp} : exp) as IPackageJsonExport;
 	const {input = DefaultValues.input} = exOpn;
 	const inputRecord = formatInput({...exOpn, input} as any);
-	const exports: Record<string, Record<'types' | 'import' | 'require', string>> = pkg.exports = {};
+	const exports: Record<string, Record<'types' | 'import' | 'require', string>>  = {};
 	const {
 		formats = ['cjs', 'es', '.d.ts'],
 		outputCodeDir = DefaultValues.outputCodeDir,
@@ -91,6 +83,11 @@ function processExports(pkg: PackageJson, arg: IPackageJsonArg) {
 		if (def.types) pkg.types = def.types;
 		if (def.require) pkg.main = def.require;
 		if (def.import) pkg.module = def.import;
+	}
+	const names = Object.keys(exports).sort()
+	const newValue = pkg.exports = {};
+	for (const name of names) {
+		newValue[name] = exports[name];
 	}
 	return pkg;
 }

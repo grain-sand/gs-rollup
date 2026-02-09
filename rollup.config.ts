@@ -1,6 +1,5 @@
 import {RollupOptions} from 'rollup'
-import {defineJs, defineDts, importReplace} from './src';
-import {logJson} from "gs-base";
+import {defineDts, defineJs, importReplace} from './src';
 
 const input = [
 	'src/index.ts',

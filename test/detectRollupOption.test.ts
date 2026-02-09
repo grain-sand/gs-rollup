@@ -7,6 +7,13 @@ import {readFileSync} from 'node:fs';
 // Mock the fs module
 vi.mock('node:fs', () => ({
   readFileSync: vi.fn(),
+  readdirSync: vi.fn(() => ['src/index.ts']), // 默认模拟只有src/index.ts
+  statSync: vi.fn(() => ({ isDirectory: () => false })),
+}));
+
+// Mock path module
+vi.mock('node:path', () => ({
+  join: vi.fn((...parts) => parts.join('/')),
 }));
 
 describe('detectRollupOption', () => {
@@ -15,7 +22,7 @@ describe('detectRollupOption', () => {
     vi.clearAllMocks();
   });
 
-  it('should return default configuration when package.json does not exist', () => {
+  it('should return configuration with found index.ts files when package.json does not exist', () => {
     // Mock readFileSync to throw an error
     (readFileSync as vi.Mock).mockImplementation(() => {
       throw new Error('File not found');
@@ -23,8 +30,9 @@ describe('detectRollupOption', () => {
 
     const result = detectRollupOption();
 
-    expect(result).toEqual({
-      input: ['src/index.ts'],
+    // Check that input contains at least src/index.ts and possibly other index.ts files
+    expect(result).toMatchObject({
+      input: expect.arrayContaining(['src/index.ts']),
       types: true,
       formats: expect.arrayContaining(['cjs', 'es']),
       outputBase: 'dist',
@@ -32,14 +40,15 @@ describe('detectRollupOption', () => {
     });
   });
 
-  it('should return default configuration when package.json is empty', () => {
+  it('should return configuration with found index.ts files when package.json is empty', () => {
     // Mock readFileSync to return an empty JSON
     (readFileSync as vi.Mock).mockReturnValue(JSON.stringify({}));
 
     const result = detectRollupOption();
 
-    expect(result).toEqual({
-      input: ['src/index.ts'],
+    // Check that input contains at least src/index.ts and possibly other index.ts files
+    expect(result).toMatchObject({
+      input: expect.arrayContaining(['src/index.ts']),
       types: true,
       formats: expect.arrayContaining(['cjs', 'es']),
       outputBase: 'dist',

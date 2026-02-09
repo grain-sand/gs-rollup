@@ -2,15 +2,44 @@ import {existsSync, writeFileSync} from "node:fs";
 import {detectRollupOption} from "../tools";
 
 const cfgPath = 'rollup.config.ts'
+const tsCfgPath = 'tsconfig.json'
+
+const tsConfig = {
+	compilerOptions: {
+		esModuleInterop: true,
+		experimentalDecorators: true,
+		preserveConstEnums: true,
+		module: "ESNext",
+		moduleResolution: "bundler",
+		sourceMap: false,
+		target: "ESNext",
+		lib: ["ESNext", "DOM"],
+		allowJs: true
+	}
+}
 
 export async function initProject() {
+	try {
+		writeCfg()
+	} catch (e) {
+		console.error('init project failed', e)
+	}
+	writeTsCfg()
+}
+
+function writeTsCfg() {
+	if (existsSync(tsCfgPath)) return
+	writeFileSync(tsCfgPath, JSON.stringify(tsConfig, null, 2))
+}
+
+function writeCfg() {
 	if (existsSync(cfgPath)) return
 	const detectedOption = detectRollupOption();
 	const out = [
 		"import { RollupOptions } from 'rollup'",
 		"import { defineJs, defineDts } from 'gs-rollup'",
 		'',
-		`const input = ${JSON.stringify(detectedOption.input)}`,
+		`const input = ${JSON.stringify(detectedOption.input, null, 2)}`,
 		"",
 		"export default <RollupOptions[]>[",
 	]

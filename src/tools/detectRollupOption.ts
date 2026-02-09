@@ -1,12 +1,14 @@
 import {InputOption, ModuleFormat} from "rollup";
 import {IDetectedOption} from "../type";
-import {packageJsonToRollup} from "../type/packageJsonToRollup";
+import {packageJsonToRollup} from "./packageJsonToRollup";
+import fs from "fs";
+import path from "path";
 
 const defaultInput: InputOption = ["src/index.ts"];
 
 export function detectRollupOption(): IDetectedOption {
 
-	// todo 1 尝试根据package.json中的信息分析
+	// 尝试根据package.json中的信息分析
 	try {
 		const option = packageJsonToRollup();
 		if (option) {
@@ -15,8 +17,32 @@ export function detectRollupOption(): IDetectedOption {
 	} catch {
 	}
 
-	// todo 2 尝试根据项目中所有index.ts文件分析,最多分析2级目录
+	// 尝试根据项目中所有index.ts文件分析,最多分析2级子目录（即加上根目录应为3级）
+	try {
 
+		const indexFiles: string[] = [];
+
+		// 读取.gitignore文件
+		const gitignorePatterns = readGitignore();
+
+		// 定义要跳过的目录
+		const skipDirs = ['node_modules', 'dist', 'lib', ...gitignorePatterns];
+
+		// 递归扫描目录，最多扫描3级（根目录+2级子目录）
+		scanDirectory('.', 0, indexFiles, skipDirs);
+
+		// 如果找到index.ts文件，使用这些文件作为input
+		if (indexFiles.length > 0) {
+			return {
+				input: indexFiles,
+				types: true,
+				formats: ['cjs', 'es'] as ModuleFormat,
+				outputBase: 'dist',
+				outputCodeDir: 'lib'
+			};
+		}
+	} catch {
+	}
 
 	// 默认配置
 	return {
@@ -26,4 +52,64 @@ export function detectRollupOption(): IDetectedOption {
 		outputBase: 'dist',
 		outputCodeDir: 'lib'
 	};
+}
+
+/**
+ * 读取.gitignore文件并返回要忽略的目录和文件模式
+ */
+function readGitignore(): string[] {
+	try {
+		if (fs.existsSync('.gitignore')) {
+			const content = fs.readFileSync('.gitignore', 'utf8');
+			return content
+				.split('\n')
+				.filter(line => line.trim() && !line.startsWith('#'))
+				.map(line => line.trim().replace(/\\/g, '/'));
+		}
+	} catch {
+	}
+	return [];
+}
+
+/**
+ * 递归扫描目录中的index.ts文件
+ */
+function scanDirectory(dir: string, level: number, indexFiles: string[], skipDirs: string[]): void {
+	// 最多扫描3级目录
+	if (level > 2) {
+		return;
+	}
+
+	const files = fs.readdirSync(dir);
+
+	for (const file of files) {
+		const filePath = path.join(dir, file);
+		const stat = fs.statSync(filePath);
+
+		// 标准化路径用于比较
+		const normalizedPath = filePath.replace(/\\/g, '/');
+
+		if (stat.isFile() && file === 'index.ts') {
+			// 如果是index.ts文件，添加到结果中
+			indexFiles.push(normalizedPath);
+		} else if (stat.isDirectory()) {
+			// 检查是否需要跳过该目录
+			// 1. 跳过隐藏目录（以 . 开始）
+			// 2. 跳过测试目录
+			// 3. 检查 .gitignore 中的忽略规则
+			const isHiddenDir = file.startsWith('.');
+			const isTestDir = file === 'test' || file === 'tests';
+			const shouldSkip = isHiddenDir || isTestDir || skipDirs.some(pattern => {
+				// 简单的模式匹配，支持目录匹配
+				if (pattern.endsWith('/')) {
+					return normalizedPath === pattern.slice(0, -1) || normalizedPath.startsWith(pattern);
+				}
+				return normalizedPath === pattern;
+			});
+			if (!shouldSkip) {
+				// 递归扫描子目录
+				scanDirectory(filePath, level + 1, indexFiles, skipDirs);
+			}
+		}
+	}
 }
