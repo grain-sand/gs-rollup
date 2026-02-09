@@ -1,5 +1,6 @@
 // noinspection ES6UnusedImports
 // noinspection JSUnusedLocalSymbols
+// noinspection TypeScriptUnresolvedReference
 
 import {describe, it, expect} from "vitest";
 import {logJson} from "gs-base";
