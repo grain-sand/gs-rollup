@@ -1,27 +1,41 @@
 import {existsSync, writeFileSync} from "node:fs";
-import {detectEntry} from "../tools";
+import {detectRollupOption} from "../tools";
 
 const cfgPath = 'rollup.config.ts'
 
 export async function initProject() {
 	if (existsSync(cfgPath)) return
-	const entry = detectEntry() || 'src/index.ts';
+	const detectedOption = detectRollupOption();
 	const out = [
 		"import { RollupOptions } from 'rollup'",
 		"import { defineJs, defineDts } from 'gs-rollup'",
 		'',
-		`const input = [ '${entry.replace(/\\/g, '/')}' ]`,
+		`const input = ${JSON.stringify(detectedOption.input)}`,
 		"",
 		"export default <RollupOptions[]>[",
-		"\t...defineDts({" ,
-		"\t\tinput," ,
-		"\t\tbuildPackageJson: {" ,
-		"\t\t\tdeleteProps: /^(devDependencies|scripts)$/" ,
-		"\t\t}" ,
-		"\t}),",
-		"\t...defineJs({input})",
+	]
+
+	if (detectedOption.types) {
+		out.push(...[
+			"\t...defineDts({",
+			"\t\tinput,",
+			"\t\tbuildPackageJson: {",
+			"\t\t\tdeleteProps: /^(devDependencies|scripts)$/",
+			"\t\t}",
+			"\t}),",
+		])
+	}
+
+	out.push(...[
+		`\t...defineJs({input,formats: ${JSON.stringify(detectedOption.formats)}})`,
 		"]",
 		"",
-	];
+	])
+
+	out.push(...[
+		"]",
+		"",
+	])
+
 	writeFileSync(cfgPath, out.join('\n'))
 }
