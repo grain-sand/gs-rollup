@@ -25,12 +25,11 @@ export async function initProject() {
 			"\t}),",
 		])
 	}
-
-	out.push(...[
-		`\t...defineJs({input,formats: ${JSON.stringify(detectedOption.formats)}})`,
-		"]",
-		"",
-	])
+	if (detectedOption.formats?.length) {
+		out.push(...[
+			`\t...defineJs({input,formats: ${JSON.stringify(detectedOption.formats)}})`,
+		])
+	}
 
 	out.push(...[
 		"]",
