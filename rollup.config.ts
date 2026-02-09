@@ -1,5 +1,8 @@
 import {RollupOptions} from 'rollup'
-import {defineDts, defineJs, importReplace} from './src';
+import {defineDts, defineJs, importReplace, GsRollupDefaults} from './src';
+
+GsRollupDefaults.outputBase = 'dist'
+GsRollupDefaults.outputCodeDir = 'lib'
 
 const input = [
 	'src/index.ts',

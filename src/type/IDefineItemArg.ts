@@ -4,13 +4,16 @@ import {ExternalOption, OutputOptions, Plugin} from "rollup";
 import {IPackageJsonArg} from "./IPackageJsonArg";
 import {ImportReplaceRole} from "./IImportReplaceRole";
 
-interface IDefineItemArg extends IDefineArg {
+export type FormatInputFn = (arg?: IDefineItemArg) => Record<string, string>
+
+export interface IDefineItemArg extends IDefineArg {
 	external?: ExternalOption[]
 	plugins?: Plugin[]
 	externalByInput?: ExternalByInput
 	replaceImport?: boolean | ImportReplaceRole
 	addExternal?: string | RegExp | (string | RegExp)[]
 	addPlugins?: Plugin[]
+	formatInput?: FormatInputFn
 }
 
 

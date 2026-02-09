@@ -1,5 +1,6 @@
 import {PackageJson} from "type-fest";
 import {EsOrCjsFormat} from "./formats";
+import {FormatInputFn} from "./IDefineItemArg";
 
 export interface IPackageJsonExport {
 	input?: string | string[] | Record<string, string>
@@ -22,4 +23,5 @@ export interface IPackageJsonArg {
 	before?: (pkg: PackageJson) => PackageJson | void
 	after?: (pkg: PackageJson) => PackageJson | void
 	exports?: PackageJsonExport
+	formatInput?: FormatInputFn
 }

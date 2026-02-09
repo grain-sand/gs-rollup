@@ -14,7 +14,7 @@ export async function index() {
 	const has = (f: string) => args.includes(f);
 
 	if (!args.length || has("--help")) {
-		console.log("\nUse -i to initialize project.\n");
+		console.log("\nUse -t to initialize project.\n");
 		spawnRollup(args);
 		return;
 	}

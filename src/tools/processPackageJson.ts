@@ -2,9 +2,8 @@ import {IPackageJsonArg, IPackageJsonExport} from "../type";
 import {PackageJson} from "type-fest";
 import fs from "fs";
 import {isString} from "gs-base";
-import {formatInput} from "./formatInput";
 import {formatOutput} from "./formatOutput";
-import {DefaultValues} from "./DefaultValues";
+import {GsRollupDefaults} from "./GsRollupDefaults";
 import {ModuleFormat} from "rollup";
 import {isCjsFormat, isEsFormat} from "./isEsOrCjsFormat";
 import {basename} from "node:path";
@@ -23,13 +22,17 @@ export function processPackageJson(arg?: IPackageJsonArg) {
 		deleteProps,
 		deleteChildProps,
 		before,
-		exports = DefaultValues.input,
+		exports = GsRollupDefaults.input,
 		after
 	} = {...defaultProcessPackageJsonArg, ...arg};
 	let pkg: PackageJson = {
 		...{
 			name: defaultName(),
 			version: '0.0.0',
+			license: 'MIT',
+			author: {
+				name: defaultName(),
+			}
 		},
 		...JSON.parse(fs.readFileSync(input, 'utf8')),
 	};
@@ -69,14 +72,14 @@ function exeDeleteProps(obj: any, pattern: RegExp) {
 
 
 function processExports(pkg: PackageJson, arg: IPackageJsonArg) {
-	const {exports: exp = {}} = arg || {};
+	const {exports: exp = {}, formatInput = GsRollupDefaults.formatInput} = arg || {};
 	const exOpn = (Array.isArray(exp) || isString(exp) ? {input: exp} : exp) as IPackageJsonExport;
-	const {input = DefaultValues.input} = exOpn;
+	const {input = GsRollupDefaults.input} = exOpn;
 	const inputRecord = formatInput({...exOpn, input} as any);
 	const exports: Record<string, Record<'types' | 'import' | 'require', string>> = {};
 	const {
 		formats = ['cjs', 'es', '.d.ts'],
-		outputCodeDir = DefaultValues.outputCodeDir,
+		outputCodeDir = GsRollupDefaults.outputCodeDir,
 		'default': dft = 'index'
 	}: IPackageJsonExport = exOpn;
 

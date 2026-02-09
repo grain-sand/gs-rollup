@@ -2,7 +2,7 @@ export function normalizeArgs(argv: string[]) {
 
 	const alias: Record<string, string> = {
 		"-c": "--config",
-		"-i": "--init",
+		"-t": "--init",
 		"-h": "--help"
 	};
 

@@ -1,5 +1,5 @@
-import {DefineJsFormat, IDefineJsArg, IDefineJsFormat, IDefineOutputOption} from "../type";
-import {formatInput, getExternalByInput, itemAfterAddPlugin} from "../tools";
+import {DefineJsFormat, IDefineItemArg, IDefineJsArg, IDefineJsFormat, IDefineOutputOption} from "../type";
+import {getExternalByInput, GsRollupDefaults, itemAfterAddPlugin} from "../tools";
 import {nodeResolve as resolve} from "@rollup/plugin-node-resolve";
 import esbuild, {Options} from "rollup-plugin-esbuild";
 import {RollupOptions} from "rollup";
@@ -10,8 +10,13 @@ import {rawLoader} from "../plugins";
 const defaultEsbuildOption: Options = {target: 'esnext', minifySyntax: true, charset: 'utf8'}
 
 export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
-	const {esbuild: esOpt = {}} = arg || {}
-	const inputs = formatInput(arg);
+	const {
+		esbuild: esOpt = {}, formatInput = GsRollupDefaults.formatInput,
+		input = GsRollupDefaults.input,
+		includeInputDir = GsRollupDefaults.includeInputDir,
+		includeInputSrc = GsRollupDefaults.includeInputSrc,
+	} = arg || {}
+	const inputs = formatInput(<IDefineItemArg>{...arg, input, includeInputDir, includeInputSrc});
 	const plugins = arg?.plugins || [];
 	plugins.push(resolve())
 	plugins.push(rawLoader())

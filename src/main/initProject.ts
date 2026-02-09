@@ -37,7 +37,10 @@ function writeCfg() {
 	const detectedOption = detectRollupOption();
 	const out = [
 		"import { RollupOptions } from 'rollup'",
-		"import { defineJs, defineDts } from 'gs-rollup'",
+		"import {defineJs, defineDts, GsRollupDefaults as Defaults} from 'gs-rollup'",
+		'',
+		"Defaults.outputBase = 'dist'",
+		"Defaults.outputCodeDir = 'lib'",
 		'',
 		`const input = ${JSON.stringify(detectedOption.input, null, 2)}`,
 		"",

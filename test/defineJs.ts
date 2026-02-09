@@ -5,7 +5,7 @@ import {describe, it, expect} from "vitest";
 import {logJson} from "gs-base";
 import { defineJs} from "../src";
 import {readFileSync} from "node:fs";
-import {DefaultValues} from "../src/tools";
+import {GsRollupDefaults} from "../src/tools";
 
 describe('defineJs', () => {
 	it('js default', async (): Promise<void> => {
@@ -17,7 +17,7 @@ describe('defineJs', () => {
 		await logJson(result)
 	})
 	it('js regex', async (): Promise<void> => {
-		const [reg] = DefaultValues.external as RegExp[];
+		const [reg] = GsRollupDefaults.external as RegExp[];
 		const pkg = JSON.parse(readFileSync("package.json", "utf8"));
 		const names = ['./abc', '/src/def','src/index.ts','src/main.ts'];
 		for (const n of [...names, ...Object.keys(pkg.dependencies), ...Object.keys(pkg.devDependencies)]) {

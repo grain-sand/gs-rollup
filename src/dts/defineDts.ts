@@ -1,7 +1,7 @@
 import {RollupOptions} from "rollup";
 import {dts} from "rollup-plugin-dts";
-import {IDefineDtsArg} from "../type";
-import {formatInput, getExternalByInput, itemAfterAddPlugin} from "../tools";
+import {IDefineDtsArg, IDefineItemArg} from "../type";
+import {getExternalByInput, GsRollupDefaults, itemAfterAddPlugin} from "../tools";
 import {defineCopy, defineOutput} from "../core";
 import {packageJson} from "../plugins";
 
@@ -10,9 +10,13 @@ export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 		exclude = 'test/**/*.ts',
 		copyMd = true,
 		output,
-		buildPackageJson = true
+		buildPackageJson = true,
+		formatInput = GsRollupDefaults.formatInput,
+		input = GsRollupDefaults.input,
+		includeInputDir = GsRollupDefaults.includeInputDir,
+		includeInputSrc = GsRollupDefaults.includeInputSrc,
 	} = arg || {}
-	const inputs = formatInput(arg);
+	const inputs = formatInput(<IDefineItemArg>{...arg, input, includeInputDir, includeInputSrc});
 	const plugins = arg?.plugins || [];
 	plugins.push(dts({respectExternal: false, exclude: Array.isArray(exclude) ? exclude : [exclude]}))
 	const result: RollupOptions[] = [];

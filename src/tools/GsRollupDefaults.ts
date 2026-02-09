@@ -1,10 +1,17 @@
 import {ExternalOption, InputOption, ModuleFormat} from "rollup";
 import {detectRollupOption} from "./detectRollupOption";
-import {IDetectedOption} from "../type";
+import {formatInput} from "./formatInput";
+import {FormatInputFn, IDetectedOption, IGsRollupDefaults} from "../type";
 
-export class DefaultValues {
+export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 
 	static external: ExternalOption = [/^node:|dynamic|(?:^[^/.]{2}.*[^.]{4}|\.(vue|scss))$/]
+
+	static formatInput: FormatInputFn = formatInput
+	
+	static includeInputDir = false
+
+	static includeInputSrc = false
 
 	static #_detected?: IDetectedOption
 
@@ -47,5 +54,10 @@ export class DefaultValues {
 	static get outputCodeDir(): string {
 		return this.detected.outputCodeDir;
 	}
+
+	static set outputCodeDir(value: string) {
+		this.detected.outputCodeDir = value
+	}
+
 
 }

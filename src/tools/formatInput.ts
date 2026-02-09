@@ -1,10 +1,9 @@
 import {isObject, isString} from "gs-base";
 import {join, parse} from "node:path";
 import {IDefineArg} from "../type";
-import {DefaultValues} from "./DefaultValues";
 
 export function formatInput(arg?: IDefineArg): Record<string, string> {
-	const {input = DefaultValues.input, includeInputDir, includeInputSrc} = arg || {};
+	const {input, includeInputDir, includeInputSrc} = arg || {};
 	if (isString(input)) {
 		return {
 			[parseName(input as string, includeInputDir, includeInputSrc)]: input as string
@@ -28,19 +27,20 @@ export function formatInput(arg?: IDefineArg): Record<string, string> {
 function parseName(input: string, includeInputDir: boolean, includeInputSrc: boolean): string {
 	const {name, dir} = parse(input);
 	let result: string;
-	switch (name) {
-		case 'index':
-			result = dir === 'src' ? name : dir.replace(/^.+[\/\\]/, '');
-			break;
-		default:
-			result = name;
-	}
 	if (includeInputDir) {
-		result = join(dir, result);
+		result = join(dir, name);
+		if (!includeInputSrc) {
+			result = result.replace(/^src[\/\\]/, '');
+		}
 		result = result.replace(/[\\/]+/g, '/');
-	}
-	if (!includeInputSrc || !includeInputDir) {
-		result = result.replace(/^src[\/\\]/, '');
+	} else {
+		switch (name) {
+			case 'index':
+				result = dir === 'src' ? name : dir.replace(/^.+[\/\\]/, '');
+				break;
+			default:
+				result = name;
+		}
 	}
 	return result;
 }
