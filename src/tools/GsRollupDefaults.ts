@@ -1,8 +1,23 @@
 import {ExternalOption, InputOption, ModuleFormat} from "rollup";
 import {detectRollupOption} from "./detectRollupOption";
 import {formatInput} from "./formatInput";
-import {ExternalByInputFn, FormatInputFn, IDetectedOption, IGsRollupDefaults} from "../type";
+import {
+	CopyRenameFn,
+	ExternalByInputFn,
+	FormatInputFn,
+	IDetectedOption,
+	IGsRollupDefaults,
+	IImportReplaceRole
+} from "../type";
 import {defaultExternalByInput} from "./defaultExternalByInput";
+
+export const defaultReplaceImportRole = Object.freeze({
+	search: /^(?:\.+\/)+([\w-$./]+(?:\.[cm]?[tj]s)?)$/,
+	replace: './$1',
+	ensureExtension: true
+})
+
+export const defaultCopyRename: CopyRenameFn = (_, $, full) => full
 
 export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 
@@ -11,6 +26,10 @@ export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 	static formatInput: FormatInputFn = formatInput
 
 	static externalByInput: ExternalByInputFn = defaultExternalByInput
+
+	static replaceImport: IImportReplaceRole = {...defaultReplaceImportRole}
+
+	static copyRename: CopyRenameFn = defaultCopyRename
 
 	static includeInputDir = false
 

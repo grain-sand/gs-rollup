@@ -3,17 +3,11 @@ import {isFunction} from "gs-base";
 import {isEsFormat, isEsOrCjsFormat, margeEsImport} from "../tools";
 import {IImportReplaceFn, IImportReplaceRole, ImportReplaceRole} from "../type";
 
-export const defaultImportReplaceRole: IImportReplaceRole = Object.freeze({
-	search: /^(?:\.+\/)+([\w-$./]+(?:\.[cm]?[tj]s)?)$/,
-	replace: './$1',
-	ensureExtension: true
-})
-
 const esImtReg = /((?:import|from)\s*)(['"])([^'"\s]+)\2|await\s+import\s*\(\s*(['"])([^'"\s]+)\4\s*\)/g
 const cjsImtReg = /(?:require|await\s+import)\s*\(\s*(['"])([^'"\s]+)\1\s*\)/g
 
-export function importReplace(replace?: ImportReplaceRole): Plugin {
-	const fn = parseFn(replace || defaultImportReplaceRole);
+export function importReplace(replace: ImportReplaceRole): Plugin {
+	const fn = parseFn(replace);
 	return <Plugin & Partial<FunctionPluginHooks>>{
 		name: 'import-replace',
 		generateBundle({format, file}, bundle) {
@@ -50,10 +44,6 @@ function processEsCode(code, fn: IImportReplaceFn, file: string) {
 		}
 
 	});
-	// return code.replace(esImtReg, (_, p1, p2, p3) => {
-	// 	console.log(_,`${p1}'${fn(p3)}'`)
-	// 	return `${p1}'${fn(p3)}'`
-	// });
 }
 
 function parseFn(replace: ImportReplaceRole): IImportReplaceFn {
@@ -74,7 +64,7 @@ function parseFn(replace: ImportReplaceRole): IImportReplaceFn {
 			if (name.endsWith(ext)) {
 				return name;
 			}
-			return `${name}${ext}`
+			return `${name.replace(/\.[cm]?[tj]s$/, '')}${ext}`
 		}
 		return name;
 	}

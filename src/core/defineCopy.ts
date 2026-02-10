@@ -7,10 +7,11 @@ import {GsRollupDefaults} from "../tools";
 export function defineCopy(src: string | string[], dest?: string): Plugin
 export function defineCopy(targets: ICopyTarget[], dest?: string): Plugin
 export function defineCopy(srcOrTargets: any, dest: string = GsRollupDefaults.outputBase): Plugin {
+	const rename = GsRollupDefaults.copyRename
 	if (Array.isArray(srcOrTargets) && srcOrTargets.length && isObject(srcOrTargets[0])) {
-		copy({
-			targets: srcOrTargets.map((item: ICopyTarget) => ({...item, dest: item.dest || dest}))
+		return copy({
+			targets: srcOrTargets.map((item: ICopyTarget) => ({rename, dest, ...item}))
 		})
 	}
-	return copy({targets: [{src: srcOrTargets, dest}]})
+	return copy({targets: [{src: srcOrTargets, dest, rename}]})
 }

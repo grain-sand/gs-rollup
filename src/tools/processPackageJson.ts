@@ -22,7 +22,7 @@ export function processPackageJson(arg?: IPackageJsonArg) {
 		deleteProps,
 		deleteChildProps,
 		before,
-		exports = GsRollupDefaults.input,
+		exports,
 		after
 	} = {...defaultProcessPackageJsonArg, ...arg};
 	let pkg: PackageJson = {
@@ -39,7 +39,7 @@ export function processPackageJson(arg?: IPackageJsonArg) {
 	const bv = before?.(pkg);
 	if (bv) pkg = bv;
 
-	if (deleteProps) {
+	if (deleteProps !== false) {
 		exeDeleteProps(pkg, deleteProps);
 	}
 	if (deleteChildProps) {
@@ -48,7 +48,7 @@ export function processPackageJson(arg?: IPackageJsonArg) {
 		}
 	}
 
-	if (exports) {
+	if (exports !== false) {
 		pkg = processExports(pkg, arg);
 	}
 
@@ -74,7 +74,7 @@ function exeDeleteProps(obj: any, pattern: RegExp) {
 function processExports(pkg: PackageJson, arg: IPackageJsonArg) {
 	const {exports: exp = {}, formatInput = GsRollupDefaults.formatInput} = arg || {};
 	const exOpn = (Array.isArray(exp) || isString(exp) ? {input: exp} : exp) as IPackageJsonExport;
-	const {input = GsRollupDefaults.input} = exOpn;
+	const {input = GsRollupDefaults.input,} = exOpn;
 	const {
 		formats = ['cjs', 'es', '.d.ts'],
 		outputCodeDir = GsRollupDefaults.outputCodeDir,
@@ -83,23 +83,24 @@ function processExports(pkg: PackageJson, arg: IPackageJsonArg) {
 		includeInputSrc = GsRollupDefaults.includeInputSrc,
 	}: IPackageJsonExport = exOpn;
 	const inputRecord = formatInput({...exOpn, input, includeInputDir, includeInputSrc} as any);
-	const exports: Record<string, Record<'types' | 'import' | 'require', string>> = {};
+	const exportsOut: Record<string, Record<'types' | 'import' | 'require', string>> = {};
 
 	for (const k of Object.keys(inputRecord)) {
 		const name = k === dft ? '.' : `./${k}`;
-		exports[name] = formatExports(k, outputCodeDir, formats);
+		exportsOut[name] = formatExports(k, outputCodeDir, formats);
 	}
-	if (exports['.']) {
-		const def = exports['.'];
+	if (exportsOut['.']) {
+		const def = exportsOut['.'];
 		if (def.types) pkg.types = def.types;
 		if (def.require) pkg.main = def.require;
 		if (def.import) pkg.module = def.import;
 	}
-	const names = Object.keys(exports).sort()
+	const names = Object.keys(exportsOut).sort()
 	const newValue = pkg.exports = {};
 	for (const name of names) {
-		newValue[name] = exports[name];
+		newValue[name] = exportsOut[name];
 	}
+
 	return pkg;
 }
 

@@ -11,14 +11,14 @@ export interface IPackageJsonExport {
 	default?: string
 }
 
-export type PackageJsonExport = string | string[] | IPackageJsonExport
+export type PackageJsonExport = false | string | string[] | IPackageJsonExport
 
-export interface IPackageJsonArg  {
+export interface IPackageJsonArg {
 	minify?: boolean
 	outputBase?: string
 	input?: string
 	overwriteProps?: PackageJson
-	deleteProps?: RegExp
+	deleteProps?: false | RegExp
 	deleteChildProps?: Partial<Record<keyof PackageJson | string, RegExp>>
 	before?: (pkg: PackageJson) => PackageJson | void
 	after?: (pkg: PackageJson) => PackageJson | void

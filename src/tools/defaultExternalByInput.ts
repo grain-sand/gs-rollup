@@ -35,14 +35,14 @@ function preExternal(arg: IExternalByInputArg) {
 	const functions: ExternalFn[] = externals.filter(e => e instanceof Function);
 	const names: string[] = externals.filter(e => isString(e));
 
-	const keys = Object.keys(inputs).filter(k => k !== current);
-	keys.length && regexes.push(new RegExp(`^(?:\.\.?/)+(?:${keys.join('|')})$`));
+	const keys = Object.keys(inputs).filter(k => k !== current)
+	keys.length && regexes.push(new RegExp(`^(?:\.\.?/)+(?:${keys.join('|')})(?:/index\.[tj]s)?$`));
 
 	const paths = Object.values(inputs).filter(p => p !== currentPath);
 	paths.length && regexes.push(new RegExp(`(?:${formatPath(paths.join('|'))})$`));
 
 	return {
-		current: new RegExp(`^(\.\.?/)+${current}|${formatPath(currentPath)}$`),
+		current: new RegExp(`^(?:\.\.?/)+${current}(?:/index\.[tj]s)?$|${formatPath(currentPath)}$`),
 		names,
 		regexes,
 		functions,
