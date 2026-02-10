@@ -1,4 +1,4 @@
-import {ExternalOption, InputOption, ModuleFormat, OutputOptions} from "rollup";
+import {InputOption, ModuleFormat, OutputOptions} from "rollup";
 
 export interface IDefineArg {
 	outputBase?: string,
@@ -23,10 +23,6 @@ interface IDefineOutputOptionBase {
 
 export interface IDefineOutputOption extends IDefineArg, IDefineOutputOptionBase {
 }
-
-export type ExternalByInput = Record<string, ExternalOption> | ((input: string) => ExternalOption)
-
-
 
 export interface IDefineJsFormat extends IDefineOutputOptionBase {
 }

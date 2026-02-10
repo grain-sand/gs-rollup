@@ -1,9 +1,8 @@
 import {IDetectedOption} from "./IDetectedOption";
 import {ExternalOption} from "rollup";
-import {FormatInputFn} from "./IDefineItemArg";
-import {IDefineArg} from "./IDefineArg";
+import {FormatInputFn, IDefineItemArg} from "./IDefineItemArg";
 
-export interface IGsRollupDefaults extends IDetectedOption, Pick<IDefineArg, 'includeInputDir' | 'includeInputSrc'> {
+export interface IGsRollupDefaults extends IDetectedOption, Pick<IDefineItemArg, 'includeInputDir' | 'includeInputSrc' | 'externalByInput'> {
 	external: ExternalOption
 	formatInput?: FormatInputFn
 

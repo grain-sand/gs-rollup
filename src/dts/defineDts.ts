@@ -1,7 +1,7 @@
 import {RollupOptions} from "rollup";
 import {dts} from "rollup-plugin-dts";
 import {IDefineDtsArg, IDefineItemArg} from "../type";
-import {getExternalByInput, GsRollupDefaults, itemAfterAddPlugin} from "../tools";
+import {GsRollupDefaults, itemAfterAddPlugin} from "../tools";
 import {defineCopy, defineOutput} from "../core";
 import {packageJson} from "../plugins";
 
@@ -15,19 +15,20 @@ export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 		input = GsRollupDefaults.input,
 		includeInputDir = GsRollupDefaults.includeInputDir,
 		includeInputSrc = GsRollupDefaults.includeInputSrc,
+		external = GsRollupDefaults.external,
+		externalByInput = GsRollupDefaults.externalByInput
 	} = arg || {}
 	const inputs = formatInput(<IDefineItemArg>{...arg, input, includeInputDir, includeInputSrc});
 	const plugins = arg?.plugins || [];
 	plugins.push(dts({respectExternal: false, exclude: Array.isArray(exclude) ? exclude : [exclude]}))
 	const result: RollupOptions[] = [];
 	const inputEntries = Object.entries(inputs);
-	const files = Object.values(inputs);
-	for (const [file, input] of inputEntries) {
+	for (const [current, input] of inputEntries) {
 		result.push({
 			input,
-			external: getExternalByInput(input, files, arg),
+			external: externalByInput({current, currentPath: input, inputs, itemArg: {...arg, external}}),
 			plugins,
-			output: output || defineOutput(file, {format: 'esm', extension: '.d.ts'})
+			output: output || defineOutput(current, {format: 'esm', extension: '.d.ts'})
 		})
 	}
 	if (copyMd) {

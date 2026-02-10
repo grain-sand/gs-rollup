@@ -1,13 +1,16 @@
 import {ExternalOption, InputOption, ModuleFormat} from "rollup";
 import {detectRollupOption} from "./detectRollupOption";
 import {formatInput} from "./formatInput";
-import {FormatInputFn, IDetectedOption, IGsRollupDefaults} from "../type";
+import {ExternalByInputFn, FormatInputFn, IDetectedOption, IGsRollupDefaults} from "../type";
+import {defaultExternalByInput} from "./defaultExternalByInput";
 
 export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 
-	static external: ExternalOption = [/^node:|dynamic|(?:^[^/.]{2}.*[^.]{4}|\.(vue|scss))$/]
+	static external: ExternalOption = [/^node:|dynamic|(?:^[^/.]{2}.*[^.?]{4}|\.(vue|scss))$/]
 
 	static formatInput: FormatInputFn = formatInput
+
+	static externalByInput: ExternalByInputFn = defaultExternalByInput
 
 	static includeInputDir = false
 

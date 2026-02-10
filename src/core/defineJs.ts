@@ -1,5 +1,5 @@
 import {DefineJsFormat, IDefineItemArg, IDefineJsArg, IDefineJsFormat, IDefineOutputOption} from "../type";
-import {getExternalByInput, GsRollupDefaults, itemAfterAddPlugin} from "../tools";
+import {GsRollupDefaults, itemAfterAddPlugin} from "../tools";
 import {nodeResolve as resolve} from "@rollup/plugin-node-resolve";
 import esbuild, {Options} from "rollup-plugin-esbuild";
 import {RollupOptions} from "rollup";
@@ -15,7 +15,9 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 		input = GsRollupDefaults.input,
 		includeInputDir = GsRollupDefaults.includeInputDir,
 		includeInputSrc = GsRollupDefaults.includeInputSrc,
-		rawLoader: rawPattern
+		rawLoader: rawPattern,
+		external = GsRollupDefaults.external,
+		externalByInput = GsRollupDefaults.externalByInput
 	} = arg || {}
 	const inputs = formatInput(<IDefineItemArg>{...arg, input, includeInputDir, includeInputSrc});
 	const plugins = arg?.plugins || [];
@@ -28,13 +30,12 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 
 	const result = [];
 	const inputEntries = Object.entries(inputs);
-	const files = Object.values(inputs);
-	for (const [file, input] of inputEntries) {
+	for (const [current, input] of inputEntries) {
 		result.push({
 			input,
-			external: getExternalByInput(input, files, arg),
+			external: externalByInput({current, currentPath: input, inputs, itemArg: {...arg, external}}),
 			plugins,
-			output: outputs.map(out => defineOutput(file, out))
+			output: outputs.map(out => defineOutput(current, out))
 		})
 	}
 	return itemAfterAddPlugin(result, arg);
