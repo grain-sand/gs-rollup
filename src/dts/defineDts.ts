@@ -21,10 +21,11 @@ export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 	plugins.push(dts({respectExternal: false, exclude: Array.isArray(exclude) ? exclude : [exclude]}))
 	const result: RollupOptions[] = [];
 	const inputEntries = Object.entries(inputs);
+	const files = Object.values(inputs);
 	for (const [file, input] of inputEntries) {
 		result.push({
 			input,
-			external: getExternalByInput(input, inputEntries, arg),
+			external: getExternalByInput(input, files, arg),
 			plugins,
 			output: output || defineOutput(file, {format: 'esm', extension: '.d.ts'})
 		})

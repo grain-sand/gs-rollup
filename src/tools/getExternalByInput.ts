@@ -3,7 +3,7 @@ import {ExternalOption} from "rollup";
 import {isFunction} from "gs-base";
 import {GsRollupDefaults} from "./GsRollupDefaults";
 
-export function getExternalByInput(currInput: string, inputEntries: [string, string][], arg?: IDefineDtsArg): ExternalOption | undefined {
+export function getExternalByInput(currInput: string, files: string[], arg?: IDefineDtsArg): ExternalOption | undefined {
 	const {
 		external = GsRollupDefaults.external,
 		externalByInput,
@@ -19,9 +19,8 @@ export function getExternalByInput(currInput: string, inputEntries: [string, str
 		return external;
 	}
 	const result = Array.isArray(external) ? [...external] : [external] as (string | RegExp)[];
-	if (inputEntries.length > 1) {
-		const inputs = inputEntries
-			.map(([, i]) => i)
+	if (files.length > 1) {
+		const inputs = files
 			.filter(i => i !== currInput)
 			.map(i => i.replace(/^src[\\/]|(?:[\\/]?index)?\.[tj]s$/g, ''))
 			.filter(Boolean)

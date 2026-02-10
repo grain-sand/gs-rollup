@@ -28,10 +28,11 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 
 	const result = [];
 	const inputEntries = Object.entries(inputs);
+	const files = Object.values(inputs);
 	for (const [file, input] of inputEntries) {
 		result.push({
 			input,
-			external: getExternalByInput(input, inputEntries, arg),
+			external: getExternalByInput(input, files, arg),
 			plugins,
 			output: outputs.map(out => defineOutput(file, out))
 		})
