@@ -51,8 +51,8 @@ export function detectRollupOption(pattern?: string | RegExp, showRegex?: boolea
 			console.log(`Use pattern: \x1b[1;34m${filePattern}\x1b[0m scan directory .`);
 		}
 
-		// 递归扫描目录，最多扫描3级（根目录+2级子目录）
-		scanDirectory('.', 0, indexFiles, skipDirs, filePattern);
+		// 递归扫描目录，遍历所有符合规则的目录
+		scanDirectory('.', indexFiles, skipDirs, filePattern);
 
 		// 如果找到匹配模式的文件，使用这些文件作为input
 		if (indexFiles.length > 0) {
@@ -97,12 +97,7 @@ function readGitignore(): string[] {
 /**
  * 递归扫描目录中的匹配文件
  */
-function scanDirectory(dir: string, level: number, indexFiles: string[], skipDirs: string[], pattern: RegExp): void {
-	// 最多扫描3级目录
-	if (level > 2) {
-		return;
-	}
-
+function scanDirectory(dir: string, indexFiles: string[], skipDirs: string[], pattern: RegExp): void {
 	const files = fs.readdirSync(dir);
 
 	for (const file of files) {
@@ -131,7 +126,7 @@ function scanDirectory(dir: string, level: number, indexFiles: string[], skipDir
 			});
 			if (!shouldSkip) {
 				// 递归扫描子目录
-				scanDirectory(filePath, level + 1, indexFiles, skipDirs, pattern);
+				scanDirectory(filePath, indexFiles, skipDirs, pattern);
 			}
 		}
 	}
