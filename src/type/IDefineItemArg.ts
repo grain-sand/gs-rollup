@@ -3,15 +3,15 @@ import {Options} from "rollup-plugin-esbuild";
 import {ExternalOption, OutputOptions, Plugin} from "rollup";
 import {IPackageJsonArg} from "./IPackageJsonArg";
 import {ImportReplaceRole} from "./IImportReplaceRole";
+import {IRawLoaderArg} from "../plugins";
 
 export type FormatInputFn = (arg?: IDefineItemArg) => Record<string, string>
 
 export interface IDefineItemArg extends IDefineArg {
-	external?: ExternalOption[]
+	external?: ExternalOption
 	plugins?: Plugin[]
 	externalByInput?: ExternalByInput
 	replaceImport?: boolean | ImportReplaceRole
-	addExternal?: string | RegExp | (string | RegExp)[]
 	addPlugins?: Plugin[]
 	formatInput?: FormatInputFn
 }
@@ -20,6 +20,7 @@ export interface IDefineItemArg extends IDefineArg {
 export interface IDefineJsArg extends IDefineItemArg {
 	formats?: DefineJsFormat | DefineJsFormat[]
 	esbuild?: Options
+	rawLoader?: IRawLoaderArg
 }
 
 export interface IDefineDtsArg extends IDefineItemArg {

@@ -4,8 +4,8 @@ import {isEsFormat, isEsOrCjsFormat, margeEsImport} from "../tools";
 import {IImportReplaceFn, IImportReplaceRole, ImportReplaceRole} from "../type";
 
 export const defaultImportReplaceRole: IImportReplaceRole = Object.freeze({
-	search: /^(\.+\/)+/,
-	replace: './',
+	search: /^(?:\.+\/)+([\w-$./]+(?:\.[cm]?[tj]s)?)$/,
+	replace: './$1',
 	ensureExtension: true
 })
 

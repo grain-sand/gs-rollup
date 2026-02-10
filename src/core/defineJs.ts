@@ -15,11 +15,12 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 		input = GsRollupDefaults.input,
 		includeInputDir = GsRollupDefaults.includeInputDir,
 		includeInputSrc = GsRollupDefaults.includeInputSrc,
+		rawLoader: rawPattern
 	} = arg || {}
 	const inputs = formatInput(<IDefineItemArg>{...arg, input, includeInputDir, includeInputSrc});
 	const plugins = arg?.plugins || [];
 	plugins.push(resolve())
-	plugins.push(rawLoader())
+	plugins.push(rawLoader(rawPattern))
 	// noinspection TypeScriptUnresolvedReference
 	const esbuildFn = isFunction(esbuild) ? esbuild : esbuild.default;
 	plugins.push(esbuildFn(<Options>{...defaultEsbuildOption, ...esOpt}))
