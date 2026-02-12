@@ -21,7 +21,7 @@ export type ExternalByInputFn = (arg: IExternalByInputArg) => ExternalFn
 export interface IDefineItemArg extends IDefineArg {
 	external?: ExternalOption
 	plugins?: Plugin[]
-	replaceImport?: boolean | PostCodeModify
+	postCodeModify?: boolean | PostCodeModify
 	addPlugins?: Plugin[]
 	formatInput?: FormatInputFn
 	addExternal?: ExternalOption

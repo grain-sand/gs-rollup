@@ -3,12 +3,11 @@ import {
 	isEsFormat,
 	isEsOrCjsFormat,
 	margeEsImport,
-	parseImportReplaceRole,
+	parsePostCodeModify,
 	replaceImportCjsCode,
 	replaceImportEsCode
 } from "../tools";
-import {IImportReplaceFn, IPostCodeModify, PostCodeModify} from "../type";
-import {isFunction} from "gs-base";
+import {PostCodeModify} from "../type";
 
 export function postCodeModify(replace: PostCodeModify): Plugin {
 	const {importReplace, codeModify} = parsePostCodeModify(replace);
@@ -43,18 +42,6 @@ export function postCodeModify(replace: PostCodeModify): Plugin {
 	}
 }
 
-function parsePostCodeModify(replace: PostCodeModify): IPostCodeModify<IImportReplaceFn> {
-	if (Array.isArray(replace)) {
-		return {
-			importReplace: parseImportReplaceRole(replace)
-		}
-	}
-	if (isFunction(replace)) {
-		return {
-			importReplace: replace as IImportReplaceFn
-		}
-	}
-	return replace || {} as any;
-}
+
 
 

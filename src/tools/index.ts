@@ -11,4 +11,6 @@ export * from './isEsOrCjsFormat'
 export * from './replaceImportEsCode'
 export * from './replaceImportCjsCode'
 export * from './parseImportReplaceRole'
+export * from './vueTsToJs'
+export * from './parsePostCodeModify'
 

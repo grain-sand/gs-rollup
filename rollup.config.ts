@@ -29,7 +29,7 @@ export default <RollupOptions[]>[
 		outputCodeDir: 'bin',
 		formats: ['cjs'],
 		addExternal: /^[.\/].*\/(core|tools|plugins|type|dts)$/,
-		replaceImport: [{
+		postCodeModify: [{
 			search: /^(?:\.{2}\/)+/,
 			replace: '../lib/',
 			ensureExtension: true

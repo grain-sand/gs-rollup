@@ -1,7 +1,7 @@
-import {IImportReplaceFn, IImportReplaceRole, PostCodeModify} from "../type";
+import {IImportReplaceFn, IImportReplaceRole, ImportReplaceRole} from "../type";
 import {isFunction} from "gs-base";
 
-export function parseImportReplaceRole(replace: PostCodeModify): IImportReplaceFn {
+export function parseImportReplaceRole(replace: ImportReplaceRole): IImportReplaceFn {
 	if (isFunction(replace)) {
 		return replace as IImportReplaceFn;
 	}

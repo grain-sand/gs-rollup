@@ -6,12 +6,12 @@ import {defaultReplaceImportRole, GsRollupDefaults} from "./GsRollupDefaults";
 
 export function itemAfterAddPlugin(options: RollupOptions[], arg?: IDefineItemArg): RollupOptions[] {
 	const {
-		replaceImport = GsRollupDefaults.replaceImport,
+		postCodeModify = GsRollupDefaults.postCodeModify,
 		addPlugins
 	} = arg || {}
 
-	if (replaceImport !== false) {
-		const codeModifyArg = isBoolean(replaceImport) ? defaultReplaceImportRole : replaceImport;
+	if (postCodeModify !== false) {
+		const codeModifyArg = isBoolean(postCodeModify) ? defaultReplaceImportRole : postCodeModify;
 		const plugin = postCodeModify(codeModifyArg as PostCodeModify);
 		for (const item of options) {
 			item.plugins = [...(item.plugins || []), plugin];
