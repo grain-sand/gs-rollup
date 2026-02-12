@@ -17,7 +17,12 @@ export function vueTsToJs(code: string, option?: IVueTsToJsOption) {
 				target: 'esnext'
 			}).code.trim();
 		}
-		delete descriptor.script.attrs?.lang;
+		if (descriptor.script) {
+			delete descriptor.script.attrs?.lang;
+		}
+		if (descriptor.scriptSetup) {
+			delete descriptor.scriptSetup.attrs?.lang;
+		}
 		if (scriptCodeModify) {
 			const {importReplace, codeModify} = parsePostCodeModify(scriptCodeModify);
 			if (importReplace) {
