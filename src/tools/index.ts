@@ -8,4 +8,7 @@ export * from './GsRollupDefaults'
 export * from './processPackageJson'
 export * from './formatOutput'
 export * from './isEsOrCjsFormat'
+export * from './replaceImportEsCode'
+export * from './replaceImportCjsCode'
+export * from './parseImportReplaceRole'
 

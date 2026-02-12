@@ -1,5 +1,5 @@
 import {RollupOptions} from 'rollup'
-import {defineDts, defineJs, importReplace, GsRollupDefaults} from './src';
+import {defineDts, defineJs, postCodeModify, GsRollupDefaults} from './src';
 
 GsRollupDefaults.outputBase = 'dist'
 GsRollupDefaults.outputCodeDir = 'lib'
@@ -29,11 +29,11 @@ export default <RollupOptions[]>[
 		outputCodeDir: 'bin',
 		formats: ['cjs'],
 		addExternal: /^[.\/].*\/(core|tools|plugins|type|dts)$/,
-		replaceImport: {
+		replaceImport: [{
 			search: /^(?:\.{2}\/)+/,
 			replace: '../lib/',
 			ensureExtension: true
-		}
+		}]
 	})
 ]
 

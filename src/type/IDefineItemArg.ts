@@ -2,7 +2,7 @@ import {DefineJsFormat, IDefineArg} from "./IDefineArg";
 import {Options} from "rollup-plugin-esbuild";
 import {ExternalOption, NullValue, OutputOptions, Plugin} from "rollup";
 import {IPackageJsonArg} from "./IPackageJsonArg";
-import {ImportReplaceRole} from "./IImportReplaceRole";
+import {PostCodeModify} from "./IPostCodeModify";
 import {IRawLoaderArg} from "../plugins";
 
 export interface IExternalByInputArg {
@@ -21,7 +21,7 @@ export type ExternalByInputFn = (arg: IExternalByInputArg) => ExternalFn
 export interface IDefineItemArg extends IDefineArg {
 	external?: ExternalOption
 	plugins?: Plugin[]
-	replaceImport?: boolean | ImportReplaceRole
+	replaceImport?: boolean | PostCodeModify
 	addPlugins?: Plugin[]
 	formatInput?: FormatInputFn
 	addExternal?: ExternalOption

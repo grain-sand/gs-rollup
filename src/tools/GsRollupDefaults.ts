@@ -7,7 +7,7 @@ import {
 	FormatInputFn,
 	IDetectedOption,
 	IGsRollupDefaults,
-	IImportReplaceRole
+	PostCodeModify
 } from "../type";
 import {defaultExternalByInput} from "./defaultExternalByInput";
 
@@ -21,13 +21,13 @@ export const defaultCopyRename: CopyRenameFn = (_, $, full) => full
 
 export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 
-	static external: ExternalOption = [/^node:|dynamic|(?:^[^/.]{2}.*[^.?]{4}|\.(vue|scss))$/]
+	static external: ExternalOption = [/^node:|dynamic|^[@\w][\w-]+(\/[\w-]+)?\w$|\.(vue|scss)$/]
 
 	static formatInput: FormatInputFn = formatInput
 
 	static externalByInput: ExternalByInputFn = defaultExternalByInput
 
-	static replaceImport: IImportReplaceRole = {...defaultReplaceImportRole}
+	static replaceImport: boolean | PostCodeModify = [{...defaultReplaceImportRole}]
 
 	static copyRename: CopyRenameFn = defaultCopyRename
 
