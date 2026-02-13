@@ -14,7 +14,9 @@ export function vueTsToJs(code: string, option?: IVueTsToJsOption) {
 		} else if (compile === 'esbuild') {
 			script.content = transformSync(script.content, {
 				loader: 'ts',
-				target: 'esnext'
+				target: 'esnext',
+				treeShaking: false,
+				charset:'utf8'
 			}).code.trim();
 		}
 		if (descriptor.script) {
@@ -40,20 +42,15 @@ export function vueTsToJs(code: string, option?: IVueTsToJsOption) {
 	}
 	const result = [];
 	if (vueCode.template?.content) {
-		result.push(`<template>`)
-		result.push(vueCode.template.content)
-		result.push(`</template>`)
+		result.push(`<template>${vueCode.template.content}</template>`)
 	}
 	if (vueCode.script?.content) {
-		result.push(`<script>`)
-		result.push(vueCode.script.content)
-		result.push(`</script>`)
+		const attrs = attrToString(vueCode.script.attrs)
+		result.push(`<script${attrs}>${vueCode.script.content}</script>`)
 	}
 	for (const style of vueCode.styles) {
 		const attrs = attrToString(style.attrs)
-		result.push(`<style${attrs}>`);
-		result.push(style.content)
-		result.push(`</style>`);
+		result.push(`<style${attrs}>${style.content}</style>`);
 	}
 	return result.join('\n');
 }

@@ -2,7 +2,7 @@ import {PostCodeModify} from "./IPostCodeModify";
 import {SFCDescriptor} from "@vue/compiler-sfc";
 import {ICopyTarget} from "./ICopyTarget";
 
-export type VueTsToJsCompileMode = 'vue' | 'esbuild'
+export type VueTsToJsCompileMode = 'vue' | 'esbuild' | 'none'
 
 export interface IVueCode extends Pick<SFCDescriptor, 'template' | 'script' | 'styles'> {
 }

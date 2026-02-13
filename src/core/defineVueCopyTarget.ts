@@ -12,7 +12,8 @@ export function defineVueCopyTarget(src: string, option?: IVueCopyTargetOption):
 }
 
 export function defineVueCopyTransform(option?: IVueTsToJsOption): ICopyTransformFn {
+	const {compile = 'vue'}: IVueTsToJsOption = option || {}
 	return (contents: Buffer, name: string) => {
-		return vueTsToJs(`${contents}`, {...option, filename: name})
+		return vueTsToJs(`${contents}`, {...option, filename: name, compile})
 	}
 }
