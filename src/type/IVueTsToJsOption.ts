@@ -1,5 +1,6 @@
 import {PostCodeModify} from "./IPostCodeModify";
 import {SFCDescriptor} from "@vue/compiler-sfc";
+import {ICopyTarget} from "./ICopyTarget";
 
 export type VueTsToJsCompileMode = 'vue' | 'esbuild'
 
@@ -21,4 +22,8 @@ export interface IVueTsToJsOption {
 	 * 最后执行
 	 */
 	vueCodeModify?: (code: IVueCode) => IVueCode
+}
+
+export interface IVueCopyTargetOption extends Omit<IVueTsToJsOption, 'filename'>, Pick<ICopyTarget, 'rename' | 'dest'> {
+
 }

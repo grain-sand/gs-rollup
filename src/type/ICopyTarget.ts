@@ -1,5 +1,7 @@
 export type CopyRenameFn = (name: string, extension: string, fullPath: string) => string;
 
+export type ICopyTransformFn = (contents: Buffer, name: string) => Buffer | string;
+
 export interface ICopyTarget {
 
 	readonly src: string | readonly string[];
@@ -8,5 +10,5 @@ export interface ICopyTarget {
 
 	readonly rename?: string | CopyRenameFn;
 
-	readonly transform?: (contents: Buffer, name: string) => any;
+	readonly transform?: ICopyTransformFn;
 }

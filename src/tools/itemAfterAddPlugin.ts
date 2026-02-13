@@ -1,5 +1,5 @@
 import {IDefineItemArg, PostCodeModify} from "../type";
-import {postCodeModify} from "../plugins";
+import {postCodeModify as postCodeModifyPlugin} from "../plugins";
 import {isBoolean} from "gs-base";
 import {RollupOptions} from "rollup";
 import {defaultReplaceImportRole, GsRollupDefaults} from "./GsRollupDefaults";
@@ -12,7 +12,7 @@ export function itemAfterAddPlugin(options: RollupOptions[], arg?: IDefineItemAr
 
 	if (postCodeModify !== false) {
 		const codeModifyArg = isBoolean(postCodeModify) ? defaultReplaceImportRole : postCodeModify;
-		const plugin = postCodeModify(codeModifyArg as PostCodeModify);
+		const plugin = postCodeModifyPlugin(codeModifyArg as PostCodeModify);
 		for (const item of options) {
 			item.plugins = [...(item.plugins || []), plugin];
 		}
