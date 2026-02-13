@@ -27,7 +27,7 @@ export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 
 	static externalByInput: ExternalByInputFn = defaultExternalByInput
 
-	static replaceImport: boolean | PostCodeModify = [{...defaultReplaceImportRole}]
+	static postCodeModify: boolean | PostCodeModify = [{...defaultReplaceImportRole}]
 
 	static copyRename: CopyRenameFn = defaultCopyRename
 
