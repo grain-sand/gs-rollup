@@ -4,6 +4,7 @@ import {IDefineDtsArg, IDefineItemArg} from "../type";
 import {GsRollupDefaults, itemAfterAddPlugin} from "../tools";
 import {defineCopy, defineOutput} from "../core";
 import {packageJson} from "../plugins";
+import resolve from "@rollup/plugin-node-resolve";
 
 export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 	const {
@@ -20,6 +21,7 @@ export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 	} = arg || {}
 	const inputs = formatInput(<IDefineItemArg>{...arg, input, includeInputDir, includeInputSrc});
 	const plugins = arg?.plugins || [];
+	plugins.push(resolve())
 	plugins.push(dts({respectExternal: false, exclude: Array.isArray(exclude) ? exclude : [exclude]}))
 	const result: RollupOptions[] = [];
 	const inputEntries = Object.entries(inputs);
