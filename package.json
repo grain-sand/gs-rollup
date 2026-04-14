@@ -1,6 +1,6 @@
 {
 	"name": "gs-rollup",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"license": "MIT",
 	"author": {
 		"name": "grain-sand"
@@ -14,6 +14,7 @@
 		"@rollup/plugin-node-resolve": "^16.0.1",
 		"esbuild": "0.25.9",
 		"gs-base": "^0.1.20",
+		"postcss-scss": "^4.0.9",
 		"rollup": "4.59.0",
 		"rollup-plugin-copy": "^3.5.0",
 		"rollup-plugin-esbuild": "^6.2.1",

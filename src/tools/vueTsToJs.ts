@@ -1,4 +1,4 @@
-import {parse, compileScript} from '@vue/compiler-sfc';
+import {compileScript, parse} from '@vue/compiler-sfc';
 import {transformSync} from 'esbuild';
 import {IVueCode, IVueTsToJsOption} from "../type";
 import {parsePostCodeModify} from "./parsePostCodeModify";
