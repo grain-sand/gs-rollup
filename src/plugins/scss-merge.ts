@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import {mergeScss} from "../tools";
+import {mergeScss, resolveScssPath} from "../tools";
 import {FunctionPluginHooks, Plugin} from "rollup";
 
 export interface IScssMergeTarget {
@@ -41,14 +41,32 @@ export function scssMerge(option: ScssMergeOption): Plugin {
 		},
 
 		async generateBundle() {
+			// 收集所有输入文件的映射关系：原始路径 -> 输出路径
+			const inputOutputMap = new Map<string, string>();
+			for (const t of targets) {
+				for (let i = 0; i < t.src.length; i++) {
+					const src = path.resolve(t.src[i]);
+					const dest = t.dest[i];
+					inputOutputMap.set(src, dest);
+				}
+			}
+
 			for (const t of targets) {
 				for (let i = 0; i < t.src.length; i++) {
 					const file = t.src[i];
 					const dest = t.dest[i];
 
-					const root = await mergeScss(file);
+					// 为当前文件创建外部依赖列表，排除其他输入文件
+					const externalFiles = Array.from(inputOutputMap.keys()).filter(f => f !== path.resolve(file));
 
-					let output = root.toString();
+					let output = await mergeScss(file, {
+						external: (id: string) => {
+							// 检查是否是其他输入文件
+							const resolvedId = resolveScssPath(id, path.dirname(file));
+							return resolvedId && externalFiles.includes(resolvedId);
+						},
+						inputOutputMap: inputOutputMap
+					});
 
 					if (t.transform instanceof Function) {
 						output = t.transform(output, file);
