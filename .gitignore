@@ -10,7 +10,7 @@ lerna-debug.log*
 node_modules
 .DS_Store
 dist
-tmp-test
+/tmp*
 dist-ssr
 coverage
 *.local

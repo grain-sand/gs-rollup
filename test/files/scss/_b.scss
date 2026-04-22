@@ -1,0 +1,5 @@
+@use "vars" as vars;
+
+.b{
+  color: vars.$color-primary;
+}

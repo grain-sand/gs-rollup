@@ -1,0 +1,5 @@
+@use "mixins" as m;
+
+.c{
+  @include m.m-test();
+}
