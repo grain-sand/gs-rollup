@@ -13,6 +13,6 @@ export * from './replaceImportCjsCode'
 export * from './parseImportReplaceRole'
 export * from './vueTsToJs'
 export * from './parsePostCodeModify'
-export * from './mergeScssAst'
+export * from './mergeScss'
 
 

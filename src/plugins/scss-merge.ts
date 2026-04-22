@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import {mergeScssAst} from "../tools";
+import {mergeScss} from "../tools";
 import {FunctionPluginHooks, Plugin} from "rollup";
 
 export interface IScssMergeTarget {
@@ -46,7 +46,7 @@ export function scssMerge(option: ScssMergeOption): Plugin {
 					const file = t.src[i];
 					const dest = t.dest[i];
 
-					const root = await mergeScssAst(file);
+					const root = await mergeScss(file);
 
 					let output = root.toString();
 

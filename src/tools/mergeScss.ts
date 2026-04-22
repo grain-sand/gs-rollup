@@ -8,7 +8,7 @@ interface IMergeScssOption {
 	addMergeComment?: boolean;
 }
 
-export async function mergeScssAst(file: string, option: IMergeScssOption = {}): Promise<Root> {
+export async function mergeScss(file: string, option: IMergeScssOption = {}): Promise<Root> {
 	const { external = [], addMergeComment = true } = option;
 	const visited = new Set<string>();
 	const entryDir = path.dirname(file);
@@ -40,14 +40,14 @@ export async function mergeScssAst(file: string, option: IMergeScssOption = {}):
 			// 提取路径部分和命名空间
 			let params = rule.params.trim();
 			let namespace = '';
-			
+
 			// 提取命名空间
 			const asIndex = params.indexOf(' as ');
 			if (asIndex !== -1) {
 				namespace = params.substring(asIndex + 4).trim();
 				params = params.substring(0, asIndex).trim();
 			}
-			
+
 			// 移除引号
 			params = params.replace(/^['"]|['"]$/g, '');
 
