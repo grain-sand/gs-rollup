@@ -21,7 +21,7 @@ export const defaultCopyRename: CopyRenameFn = (_, $, full) => full
 
 export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 
-	static external: ExternalOption = [/^node:|dynamic|^[@\w][\w-]+(\/[\w-]+)?\w$|\.(vue|scss)$/]
+	static external: ExternalOption = [/^node:|dynamic|^[@\w][\w-]+(\/[\w-]+)?\w$/]
 
 	static formatInput: FormatInputFn = formatInput
 

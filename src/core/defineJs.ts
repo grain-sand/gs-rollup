@@ -2,6 +2,7 @@ import {DefineJsFormat, IDefineItemArg, IDefineJsArg, IDefineJsFormat, IDefineOu
 import {GsRollupDefaults, itemAfterAddPlugin} from "../tools";
 import {nodeResolve as resolve} from "@rollup/plugin-node-resolve";
 import esbuild, {Options} from "rollup-plugin-esbuild";
+import postcss from "rollup-plugin-postcss";
 import {RollupOptions} from "rollup";
 import {isFunction, isString} from "gs-base";
 import {defineOutput} from "./defineOutput";
@@ -34,8 +35,15 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 		result.push({
 			input,
 			external: externalByInput({current, currentPath: input, inputs, itemArg: {...arg, external}}),
-			plugins,
-			output: outputs.map(out => defineOutput(current, out))
+			plugins: [...plugins, postcss({
+				plugins: [], sourceMap: false, to: `${current}.css`, use: {
+					sass: {
+						silenceDeprecations: ['legacy-js-api'],
+					},
+				},
+			} as any)],
+			output:
+				outputs.map(out => defineOutput(current, out))
 		})
 	}
 	return itemAfterAddPlugin(result, arg);

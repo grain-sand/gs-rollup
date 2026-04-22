@@ -1,12 +1,13 @@
 {
 	"name": "gs-rollup",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"license": "MIT",
 	"author": {
 		"name": "grain-sand"
 	},
 	"scripts": {
 		"build": "tsx src/main/index.ts -c",
+		"test-build:scss": "tsx src/main/index.ts -c test/files/scss.config.ts",
 		"test": "vitest run",
 		"test:install": "tsx src/main/index.ts -i"
 	},
@@ -14,21 +15,22 @@
 		"@rollup/plugin-node-resolve": "^16.0.1",
 		"esbuild": "0.25.9",
 		"gs-base": "^0.1.20",
+		"postcss": "^8.5.10",
 		"postcss-scss": "^4.0.9",
-		"rollup": "4.59.0",
+		"rollup": "^4.60.2",
 		"rollup-plugin-copy": "^3.5.0",
-		"rollup-plugin-esbuild": "^6.2.1",
-		"tsx": "^4.21.0",
-		"type-fest": "^5.4.3"
-	},
-	"optionalDependencies": {
 		"rollup-plugin-dts": "^6.2.3",
+		"rollup-plugin-esbuild": "^6.2.1",
+		"rollup-plugin-postcss": "^4.0.2",
+		"sass": "^1.99.0",
+		"tsx": "^4.21.0",
+		"type-fest": "^5.4.3",
 		"typescript": "^5.9.3"
 	},
 	"devDependencies": {
 		"@vue/compiler-sfc": "^3.5.28",
-		"scss": "^0.2.4",
-		"vitest": "^3.2.4"
+		"vitest": "^3.2.4",
+		"vue": "^3.5.33"
 	},
 	"type": "module",
 	"keywords": [

@@ -19,6 +19,8 @@ export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 		external = GsRollupDefaults.external,
 		externalByInput = GsRollupDefaults.externalByInput
 	} = arg || {}
+	const dtsExternal = Array.isArray(external) ? external : [external]
+	dtsExternal.push(/\.scss$/)
 	const inputs = formatInput(<IDefineItemArg>{...arg, input, includeInputDir, includeInputSrc});
 	const plugins = arg?.plugins || [];
 	plugins.push(resolve())
@@ -28,7 +30,12 @@ export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 	for (const [current, input] of inputEntries) {
 		result.push({
 			input,
-			external: externalByInput({current, currentPath: input, inputs, itemArg: {...arg, external}}),
+			external: externalByInput({
+				current,
+				currentPath: input,
+				inputs,
+				itemArg: {...arg, external: dtsExternal as any}
+			}),
 			plugins,
 			output: output || defineOutput(current, {format: 'esm', extension: '.d.ts'})
 		})
