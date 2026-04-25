@@ -6,6 +6,8 @@ import path from "path";
 
 const defaultInput: InputOption = ["src/index.ts"];
 
+const vueRegex = /src\/(.*)\.vue$/i;
+
 export function detectRollupOption(pattern?: string | RegExp, showRegex?: boolean): IDetectedOption {
 
 	// 尝试根据package.json中的信息分析
@@ -16,6 +18,8 @@ export function detectRollupOption(pattern?: string | RegExp, showRegex?: boolea
 		}
 	} catch {
 	}
+
+	let isVue = false;
 
 	// 尝试根据项目中所有匹配模式的文件分析,最多分析2级子目录（即加上根目录应为3级）
 	try {
@@ -52,14 +56,14 @@ export function detectRollupOption(pattern?: string | RegExp, showRegex?: boolea
 		}
 
 		// 递归扫描目录，遍历所有符合规则的目录
-		scanDirectory('.', indexFiles, skipDirs, filePattern);
+		isVue = scanDirectory('.', indexFiles, skipDirs, filePattern);
 
 		// 如果找到匹配模式的文件，使用这些文件作为input
 		if (indexFiles.length > 0) {
 			return {
 				input: indexFiles,
 				types: true,
-				formats: ['cjs', 'es'] as ModuleFormat,
+				formats: (isVue ? ['es'] : ['cjs', 'es']) as ModuleFormat,
 				outputBase: 'dist',
 				outputCodeDir: 'lib'
 			};
@@ -71,7 +75,7 @@ export function detectRollupOption(pattern?: string | RegExp, showRegex?: boolea
 	return {
 		input: defaultInput,
 		types: true,
-		formats: ['cjs', 'es'] as ModuleFormat,
+		formats: (isVue ? ['es'] : ['cjs', 'es']) as ModuleFormat,
 		outputBase: 'dist',
 		outputCodeDir: 'lib'
 	};
@@ -97,8 +101,10 @@ function readGitignore(): string[] {
 /**
  * 递归扫描目录中的匹配文件
  */
-function scanDirectory(dir: string, indexFiles: string[], skipDirs: string[], pattern: RegExp): void {
+function scanDirectory(dir: string, indexFiles: string[], skipDirs: string[], pattern: RegExp): boolean {
 	const files = fs.readdirSync(dir);
+
+	let isVue = false;
 
 	for (const file of files) {
 		const filePath = path.join(dir, file);
@@ -107,9 +113,13 @@ function scanDirectory(dir: string, indexFiles: string[], skipDirs: string[], pa
 		// 标准化路径用于比较
 		const normalizedPath = filePath.replace(/\\/g, '/');
 
-		if (stat.isFile() && pattern.test(normalizedPath)) {
-			// 如果文件匹配模式，添加到结果中
-			indexFiles.push(normalizedPath);
+		if (stat.isFile()) {
+			if (pattern.test(normalizedPath)) {
+				indexFiles.push(normalizedPath);
+			}
+			if (!isVue && vueRegex.test(normalizedPath)) {
+				isVue = true;
+			}
 		} else if (stat.isDirectory()) {
 			// 检查是否需要跳过该目录
 			// 1. 跳过隐藏目录（以 . 开始）
@@ -126,8 +136,12 @@ function scanDirectory(dir: string, indexFiles: string[], skipDirs: string[], pa
 			});
 			if (!shouldSkip) {
 				// 递归扫描子目录
-				scanDirectory(filePath, indexFiles, skipDirs, pattern);
+				const r = scanDirectory(filePath, indexFiles, skipDirs, pattern);
+				if (!isVue && r) {
+					isVue = true;
+				}
 			}
 		}
 	}
+	return isVue;
 }

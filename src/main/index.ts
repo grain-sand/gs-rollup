@@ -39,12 +39,7 @@ export async function index() {
 				return;
 			}
 
-			if (existsSync(jsCfg)) {
-				spawnRollup(["--config", jsCfg, ...baseArgs], false);
-				return;
-			}
-
-			await runProgrammaticDefault();
+			spawnRollup(["--config", jsCfg, ...baseArgs], false);
 			return;
 		}
 
