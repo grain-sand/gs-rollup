@@ -1,6 +1,6 @@
 import {RollupOptions} from "rollup";
 import {vueDts} from "gs-rollup-plugin-vue-dts";
-// import {dts} from "rollup-plugin-dts";
+import {dts} from "rollup-plugin-dts";
 import {IDefineDtsArg, IDefineItemArg} from "../type";
 import {GsRollupDefaults, itemAfterAddPlugin} from "../tools";
 import {defineCopy, defineOutput} from "../core";
@@ -19,19 +19,22 @@ export function defineDts(arg?: IDefineDtsArg): RollupOptions[] {
 		includeInputSrc = GsRollupDefaults.includeInputSrc,
 		external = GsRollupDefaults.external,
 		externalByInput = GsRollupDefaults.externalByInput,
-		vueDts: vueDtsOption = {}
+		vueDts: vueDtsOption
 	} = arg || {}
 	const dtsExternal = Array.isArray(external) ? external : [external]
 	dtsExternal.push(/\.scss$/)
 	const inputs = formatInput(<IDefineItemArg>{...arg, input, includeInputDir, includeInputSrc});
 	const plugins = arg?.plugins || [];
 	plugins.push(resolve())
-	plugins.push(vueDts({
-		...{
-			dtsOptions: {respectExternal: false, exclude: Array.isArray(exclude) ? exclude : [exclude]}
-		},
-		...vueDtsOption
-	}))
+	const dtsOptions = {respectExternal: false, exclude: Array.isArray(exclude) ? exclude : [exclude]}
+	if(vueDtsOption===false) {
+		plugins.push(dts(dtsOptions))
+	} else {
+		plugins.push(vueDts({
+			...{dtsOptions},
+			...vueDtsOption
+		}))
+	}
 	const result: RollupOptions[] = [];
 	const inputEntries = Object.entries(inputs);
 	for (const [current, input] of inputEntries) {
@@ -65,14 +68,20 @@ function definePkgPlugin(arg?: IDefineDtsArg) {
 		includeInputSrc,
 		includeInputDir
 	} = arg || {};
+	const {jsFormats: jf = []} = GsRollupDefaults;
+	const formats = Array.isArray(jf) ? [...jf] : [jf]
+	if(!formats.includes('.d.ts')){
+		formats.push('.d.ts')
+	}
 	return packageJson({
 		...{
 			outputBase,
 			exports: {
 				input,
+				formats,
 				outputCodeDir,
 				includeInputDir,
-				includeInputSrc,
+				includeInputSrc
 			}
 		},
 		...buildPackageJson

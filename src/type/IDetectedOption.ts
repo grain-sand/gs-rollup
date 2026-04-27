@@ -1,5 +1,5 @@
 import {InputOption} from "rollup";
-import {DefineJsFormat} from "./IDefineArg";
+import {DefineJsFormat} from "./formats";
 
 export interface IDetectedOption {
 	/**

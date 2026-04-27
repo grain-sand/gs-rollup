@@ -1,9 +1,16 @@
+import {ModuleFormat} from "rollup";
+
 export const esFormats = ['es', 'esm', 'module'] as const
 
 export const cjsFormats = ['cjs', 'commonjs'] as const
 
-export type EsFormat = typeof esFormats[number]
+export interface IDefineJsFormat {
+	format: ModuleFormat
+	extension?: string
+}
 
-export type CjsFormat = typeof cjsFormats[number]
+export type DefineJsFormat = IDefineJsFormat | ModuleFormat
 
-export type EsOrCjsFormat = EsFormat | CjsFormat
+export type DefinePackageJsonFormat = DefineJsFormat | '.d.ts'
+
+

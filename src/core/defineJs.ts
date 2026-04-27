@@ -19,7 +19,8 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 		includeInputSrc = GsRollupDefaults.includeInputSrc,
 		rawLoader: rawPattern,
 		external = GsRollupDefaults.external,
-		externalByInput = GsRollupDefaults.externalByInput
+		externalByInput = GsRollupDefaults.externalByInput,
+		formats = GsRollupDefaults.jsFormats,
 	} = arg || {}
 	const inputs = formatInput(<IDefineItemArg>{...arg, input, includeInputDir, includeInputSrc});
 	const plugins = arg?.plugins || [];
@@ -33,7 +34,7 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 		target: 'browser',
 		preprocessStyles: false,
 	} as any))
-	const outputs = checkFormats(arg?.formats, arg);
+	const outputs = checkFormats(formats, arg);
 
 	const result = [];
 	const inputEntries = Object.entries(inputs);

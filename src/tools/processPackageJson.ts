@@ -1,10 +1,9 @@
-import {IPackageJsonArg, IPackageJsonExport} from "../type";
+import {DefinePackageJsonFormat, IPackageJsonArg, IPackageJsonExport} from "../type";
 import {PackageJson} from "type-fest";
 import fs from "fs";
 import {isString} from "gs-base";
 import {formatOutput} from "./formatOutput";
 import {GsRollupDefaults} from "./GsRollupDefaults";
-import {ModuleFormat} from "rollup";
 import {isCjsFormat, isEsFormat} from "./isEsOrCjsFormat";
 import {basename} from "node:path";
 
@@ -105,15 +104,16 @@ function processExports(pkg: PackageJson, arg: IPackageJsonArg) {
 }
 
 
-function formatExports(file: string, outputCodeDir: string, formats: (ModuleFormat | ".d.ts")[]) {
+function formatExports(file: string, outputCodeDir: string, formats: DefinePackageJsonFormat[]) {
 	const result: any = {};
 	for (const fmt of formats) {
+		const format = typeof fmt === 'string' ? fmt : fmt.format;
 		const output = `./${formatOutput(file, '', outputCodeDir, fmt)}`;
-		if (fmt === '.d.ts') {
+		if (format === '.d.ts') {
 			result.types = output;
-		} else if (isEsFormat(fmt)) {
+		} else if (isEsFormat(format)) {
 			result.import = output;
-		} else if (isCjsFormat(fmt)) {
+		} else if (isCjsFormat(format)) {
 			result.require = output;
 		}
 	}

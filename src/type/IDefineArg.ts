@@ -24,8 +24,3 @@ interface IDefineOutputOptionBase {
 export interface IDefineOutputOption extends IDefineArg, IDefineOutputOptionBase {
 }
 
-export interface IDefineJsFormat extends IDefineOutputOptionBase {
-}
-
-export type DefineJsFormat = IDefineJsFormat | ModuleFormat
-

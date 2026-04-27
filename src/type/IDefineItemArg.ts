@@ -1,10 +1,11 @@
-import {DefineJsFormat, IDefineArg} from "./IDefineArg";
+import {IDefineArg} from "./IDefineArg";
 import {Options} from "rollup-plugin-esbuild";
 import {ExternalOption, NullValue, OutputOptions, Plugin} from "rollup";
 import {IPackageJsonArg} from "./IPackageJsonArg";
 import {PostCodeModify} from "./IPostCodeModify";
 import {IRawLoaderArg} from "../plugins";
 import {IVueDtsOptions} from "gs-rollup-plugin-vue-dts";
+import {DefineJsFormat} from "./formats";
 
 export interface IExternalByInputArg {
 	current: string
@@ -45,5 +46,5 @@ export interface IDefineDtsArg extends IDefineItemArg {
 	copyMd?: boolean
 	output?: OutputOptions
 	buildPackageJson?: IPackageJsonArg | boolean
-	vueDts?: IVueDtsOptions
+	vueDts?: IVueDtsOptions | boolean
 }

@@ -1,10 +1,10 @@
 import {PackageJson} from "type-fest";
-import {EsOrCjsFormat} from "./formats";
+import {DefinePackageJsonFormat} from "./formats";
 import {FormatInputFn} from "./IDefineItemArg";
 
 export interface IPackageJsonExport {
 	input?: string | string[] | Record<string, string>
-	formats?: (EsOrCjsFormat | '.d.ts')[]
+	formats?: DefinePackageJsonFormat[]
 	outputCodeDir?: string;
 	includeInputDir?: boolean;
 	includeInputSrc?: boolean;
