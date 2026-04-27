@@ -1,4 +1,5 @@
-import {InputOption, ModuleFormat} from "rollup";
+import {InputOption} from "rollup";
+import {DefineJsFormat} from "./IDefineArg";
 
 export interface IDetectedOption {
 	/**
@@ -22,7 +23,7 @@ export interface IDetectedOption {
 	 * 根据 `package.json` 中的 `main` 与 `exports` 确定输入文件
 	 * - 默认值为 `['cjs','es']`
 	 */
-	formats: ModuleFormat
+	jsFormats: DefineJsFormat | DefineJsFormat[]
 
 	/**
 	 * 根据 `package.json` 中的 `file` `main` 、`exports` 、`types` 的完全相同的第一个目录
@@ -37,5 +38,11 @@ export interface IDetectedOption {
 	 * - 如果未存在定义，默认值 为 `lib`
 	 */
 	outputCodeDir: string
+
+	/**
+	 * 当前项目是否为vue项目
+	  0- 项目中存在vue文件，即认为是vue项目
+	 */
+	isVue: boolean;
 
 }

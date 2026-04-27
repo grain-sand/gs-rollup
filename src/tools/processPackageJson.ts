@@ -76,7 +76,7 @@ function processExports(pkg: PackageJson, arg: IPackageJsonArg) {
 	const exOpn = (Array.isArray(exp) || isString(exp) ? {input: exp} : exp) as IPackageJsonExport;
 	const {input = GsRollupDefaults.input,} = exOpn;
 	const {
-		formats = ['cjs', 'es', '.d.ts'],
+		formats = GsRollupDefaults.jsFormats || ['cjs', 'es', '.d.ts'],
 		outputCodeDir = GsRollupDefaults.outputCodeDir,
 		'default': dft = 'index',
 		includeInputDir = GsRollupDefaults.includeInputDir,

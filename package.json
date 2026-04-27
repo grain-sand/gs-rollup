@@ -13,8 +13,10 @@
 	},
 	"dependencies": {
 		"@rollup/plugin-node-resolve": "^16.0.1",
+		"@vitejs/plugin-vue": "^6.0.6",
 		"esbuild": "0.25.9",
 		"gs-base": "^0.1.20",
+		"gs-rollup-plugin-vue-dts": "D:\\WorkSpace\\grain-sand\\gs-rollup-plugin-vue-dts\\dist",
 		"postcss": "^8.5.10",
 		"postcss-scss": "^4.0.9",
 		"rollup": "^4.60.2",

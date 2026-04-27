@@ -3,6 +3,7 @@ import {GsRollupDefaults, itemAfterAddPlugin} from "../tools";
 import {nodeResolve as resolve} from "@rollup/plugin-node-resolve";
 import esbuild, {Options} from "rollup-plugin-esbuild";
 import postcss from "rollup-plugin-postcss";
+import vue from '@vitejs/plugin-vue'
 import {RollupOptions} from "rollup";
 import {isFunction, isString} from "gs-base";
 import {defineOutput} from "./defineOutput";
@@ -27,6 +28,11 @@ export function defineJs(arg?: IDefineJsArg): RollupOptions[] {
 	// noinspection TypeScriptUnresolvedReference
 	const esbuildFn = isFunction(esbuild) ? esbuild : esbuild.default;
 	plugins.push(esbuildFn(<Options>{...defaultEsbuildOption, ...esOpt}))
+	plugins.push(vue({
+		include: /\.vue$/,
+		target: 'browser',
+		preprocessStyles: false,
+	} as any))
 	const outputs = checkFormats(arg?.formats, arg);
 
 	const result = [];

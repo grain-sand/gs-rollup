@@ -45,7 +45,7 @@ function writeCfg(args: string[]) {
 		console.log('\x1b[32mrollup.config.ts already exists\x1b[0m')
 	}
 	const pattern = args.length > 1 ? args.pop() : undefined;
-	const detectedOption = detectRollupOption(pattern, true);
+	const {input, types, jsFormats, isVue} = detectRollupOption(pattern, true);
 	const out = [
 		"import { RollupOptions } from 'rollup'",
 		"import {defineJs, defineDts, GsRollupDefaults as Defaults} from 'gs-rollup'",
@@ -53,12 +53,12 @@ function writeCfg(args: string[]) {
 		"Defaults.outputBase = 'dist'",
 		"Defaults.outputCodeDir = 'lib'",
 		'',
-		`const input = ${JSON.stringify(detectedOption.input, null, 2)}`,
+		`const input = ${JSON.stringify(input, null, 2)}`,
 		"",
 		"export default <RollupOptions[]>[",
 	]
 
-	if (detectedOption.types) {
+	if (types) {
 		out.push(...[
 			"\t...defineDts({",
 			"\t\tinput,",
@@ -68,9 +68,9 @@ function writeCfg(args: string[]) {
 			"\t}),",
 		])
 	}
-	if (detectedOption.formats?.length) {
+	if (!isVue && (typeof jsFormats === 'object' || (Array.isArray(jsFormats) || typeof jsFormats === 'string') && jsFormats?.length)) {
 		out.push(...[
-			`\t...defineJs({input,formats: ${JSON.stringify(detectedOption.formats)}})`,
+			`\t...defineJs({input,formats: ${JSON.stringify(jsFormats)}})`,
 		])
 	}
 

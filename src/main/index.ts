@@ -32,23 +32,20 @@ export async function index() {
 		const tsCfg = join(process.cwd(), "rollup.config.ts");
 		const jsCfg = join(process.cwd(), "rollup.config.js");
 
-		if (!cfgArg) {
-
+		if (cfgArg) {
+			const cfg = resolve(cfgArg);
+			spawnRollup(args, cfg.endsWith(".ts"));
+		} else {
 			if (existsSync(tsCfg)) {
 				spawnRollup(["--config", tsCfg, ...baseArgs], true);
 				return;
 			}
-
-			spawnRollup(["--config", jsCfg, ...baseArgs], false);
-			return;
-		}
-
-		const cfg = resolve(cfgArg);
-
-		if (existsSync(cfg))
-			spawnRollup(args, cfg.endsWith(".ts"));
-		else
+			if (existsSync(jsCfg)) {
+				spawnRollup(["--config", jsCfg, ...baseArgs], false);
+				return;
+			}
 			await runProgrammaticDefault();
+		}
 
 		return;
 	}

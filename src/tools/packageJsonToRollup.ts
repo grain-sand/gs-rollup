@@ -35,8 +35,10 @@ export function packageJsonToRollup(): IDetectedOption | undefined {
 	// 确定 types 值
 	const hasTypes = pkg.types !== undefined || hasTypesInExports(pkg.exports);
 
+	const isVue = !!pkg.dependencies?.vue
+
 	// 确定 formats 值
-	const formats = determineFormats(pkg);
+	const formats = determineFormats(pkg,isVue);
 
 	// 确定 outputBase 和 outputCodeDir
 	const {outputBase, outputCodeDir} = determineOutputDirs(allPaths);
@@ -44,9 +46,10 @@ export function packageJsonToRollup(): IDetectedOption | undefined {
 	return {
 		input: ["src/index.ts"], // 默认input，后续会被detectRollupOption的todo 2覆盖
 		types: hasTypes,
-		formats: formats as ModuleFormat,
+		jsFormats: formats as ModuleFormat,
 		outputBase,
-		outputCodeDir
+		outputCodeDir,
+		isVue
 	};
 }
 
@@ -91,7 +94,7 @@ function hasTypesInExports(exports: PackageJson["exports"]): boolean {
 /**
  * 根据 package.json 确定输出格式
  */
-function determineFormats(pkg: PackageJson): string[] {
+function determineFormats(pkg: PackageJson, isVue: boolean): string[] {
 	const formats: string[] = [];
 
 	if (pkg.main) {
@@ -107,7 +110,7 @@ function determineFormats(pkg: PackageJson): string[] {
 
 	// 如果没有确定的格式，使用默认格式
 	if (formats.length === 0) {
-		return ["cjs", "es"];
+		return isVue ? ["es"] : ["cjs", "es"];
 	}
 
 	// 去重
@@ -143,7 +146,7 @@ function extractFormatsFromExports(exports: PackageJson["exports"]): string[] {
 function determineOutputDirs(paths: string[]): { outputBase: string; outputCodeDir: string } {
 	// 标准化路径，统一使用 / 分隔符
 	const normalizedPaths = paths.map(path => path.replace(/\\/g, "/").replace(/^\.\//, ""));
-	
+
 	// 将路径分割为目录和文件名
 	const pathParts = normalizedPaths.map(path => {
 		const parts = path.split("/");
@@ -195,7 +198,7 @@ function findLongestCommonPrefix(paths: string[][]): string[] {
 	// 逐目录比较
 	for (let i = 0; i < minLength; i++) {
 		const currentDir = paths[0][i];
-		
+
 		// 检查所有路径在当前位置是否有相同的目录
 		if (paths.every(path => path[i] === currentDir)) {
 			commonPrefix.push(currentDir);

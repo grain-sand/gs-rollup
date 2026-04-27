@@ -1,8 +1,9 @@
-import {ExternalOption, InputOption, ModuleFormat} from "rollup";
+import {ExternalOption, InputOption} from "rollup";
 import {detectRollupOption} from "./detectRollupOption";
 import {formatInput} from "./formatInput";
 import {
 	CopyRenameFn,
+	DefineJsFormat,
 	ExternalByInputFn,
 	FormatInputFn,
 	IDetectedOption,
@@ -37,6 +38,10 @@ export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 
 	static #_detected?: IDetectedOption
 
+	static get isVue(): boolean {
+		return this.detected.isVue;
+	}
+
 	static get detected() {
 		return this.#_detected || this.init();
 	}
@@ -57,12 +62,12 @@ export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 		this.detected.types = value
 	}
 
-	static get formats(): ModuleFormat {
-		return this.detected.formats;
+	static get jsFormats(): DefineJsFormat | DefineJsFormat[] {
+		return this.detected.jsFormats;
 	}
 
-	static set formats(value: ModuleFormat) {
-		this.detected.formats = value
+	static set jsFormats(value: DefineJsFormat | DefineJsFormat[]) {
+		this.detected.jsFormats = value
 	}
 
 	static get outputBase(): string {
@@ -84,4 +89,6 @@ export const GsRollupDefaults: Required<IGsRollupDefaults> = class {
 	static init(showPattern?: boolean): IDetectedOption {
 		return this.#_detected || (this.#_detected = detectRollupOption(undefined, showPattern));
 	}
+
+
 }

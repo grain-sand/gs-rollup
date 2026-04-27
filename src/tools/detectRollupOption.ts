@@ -1,5 +1,5 @@
-import {InputOption, ModuleFormat} from "rollup";
-import {IDetectedOption} from "../type";
+import {InputOption} from "rollup";
+import {DefineJsFormat, IDetectedOption} from "../type";
 import {packageJsonToRollup} from "./packageJsonToRollup";
 import fs from "fs";
 import path from "path";
@@ -63,9 +63,10 @@ export function detectRollupOption(pattern?: string | RegExp, showRegex?: boolea
 			return {
 				input: indexFiles,
 				types: true,
-				formats: (isVue ? ['es'] : ['cjs', 'es']) as ModuleFormat,
+				jsFormats: (isVue ? [{format: 'es',extension:'js'}] : ['cjs', 'es']) as DefineJsFormat[],
 				outputBase: 'dist',
-				outputCodeDir: 'lib'
+				outputCodeDir: 'lib',
+				isVue,
 			};
 		}
 	} catch {
@@ -75,9 +76,10 @@ export function detectRollupOption(pattern?: string | RegExp, showRegex?: boolea
 	return {
 		input: defaultInput,
 		types: true,
-		formats: (isVue ? ['es'] : ['cjs', 'es']) as ModuleFormat,
+		jsFormats: (isVue ? [{format: 'es',extension:'js'}] : ['cjs', 'es']) as DefineJsFormat[],
 		outputBase: 'dist',
-		outputCodeDir: 'lib'
+		outputCodeDir: 'lib',
+		isVue,
 	};
 }
 

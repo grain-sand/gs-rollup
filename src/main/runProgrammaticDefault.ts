@@ -19,10 +19,13 @@ export async function runProgrammaticDefault() {
 			console.error(e)
 		}
 	}
-	for (const cfg of [
-		...dts,
-		...defineJs()
-	]) {
+
+	const defines = [...dts];
+	if (!GsRollupDefaults.isVue) {
+		defines.push(...defineJs())
+	}
+
+	for (const cfg of defines) {
 		const bundle = await rollup(cfg)
 		const outputs = Array.isArray(cfg.output) ? cfg.output : [cfg.output]
 
