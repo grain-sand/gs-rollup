@@ -2,30 +2,9 @@ import fs from "fs";
 import path from "path";
 import {mergeScss, resolveScssPath} from "../tools";
 import {FunctionPluginHooks, Plugin} from "rollup";
+import {FileOperationOption, IFileOperationValidTarget} from "../type";
 
-export interface IScssMergeTarget {
-
-	src: string | string[];
-
-	dest?: string | string[];
-
-	rename?: (fullPath: string) => string;
-
-	transform?: (code: string, file: string) => any;
-
-}
-
-interface IScssMergeValidTarget extends Omit<IScssMergeTarget, 'src' | 'dest'> {
-
-	src: string[];
-
-	dest: string[];
-}
-
-export type ScssMergeTarget = string | IScssMergeTarget;
-export type ScssMergeOption = ScssMergeTarget | ScssMergeTarget[];
-
-export function scssMerge(option: ScssMergeOption): Plugin {
+export function scssMerge(option: FileOperationOption): Plugin {
 
 	const targets = checkScssMergeOption(option);
 
@@ -83,7 +62,7 @@ export function scssMerge(option: ScssMergeOption): Plugin {
 	};
 }
 
-function checkScssMergeOption(option: any): IScssMergeValidTarget[] {
+function checkScssMergeOption(option: any): IFileOperationValidTarget[] {
 	const targets = Array.isArray(option) ? option : [option]
 	const distNameSet = new Set();
 
