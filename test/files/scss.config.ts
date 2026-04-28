@@ -1,4 +1,4 @@
-import {defineJs, GsRollupDefaults} from "../../src";
+import {defineJs, GsRollupDefaults, scssCompile} from "../../src";
 
 GsRollupDefaults.external = []
 GsRollupDefaults.outputBase = 'tmp'
@@ -8,8 +8,12 @@ const input = [
 	'test/files/scss/index.ts',
 ]
 
-const scssConfig = defineJs({input})
-
-// console.log(JSON.stringify(scssConfig,null,2))
-
-export default scssConfig
+export default defineJs({
+	input,
+	addPlugins: [
+		scssCompile({
+			src: 'test/files/scss/index.scss',
+			dest: 'style.css',
+		})
+	],
+})
