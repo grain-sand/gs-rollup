@@ -1,6 +1,6 @@
 import {PackageJson} from "type-fest";
 import {DefinePackageJsonFormat} from "./formats";
-import {FormatInputFn} from "./IDefineItemArg";
+import type {FormatInputFn} from "./IDefineItemArg";
 
 export interface IPackageJsonExport {
 	input?: string | string[] | Record<string, string>

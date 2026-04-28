@@ -1,11 +1,6 @@
-import {IDefineArg} from "./IDefineArg";
-import {Options} from "rollup-plugin-esbuild";
-import {ExternalOption, NullValue, OutputOptions, Plugin} from "rollup";
-import {IPackageJsonArg} from "./IPackageJsonArg";
-import {PostCodeModify} from "./IPostCodeModify";
-import {IRawLoaderArg} from "../plugins";
-import {IVueDtsOptions} from "gs-rollup-plugin-vue-dts";
-import {DefineJsFormat} from "./formats";
+import type {IDefineArg} from "./IDefineArg";
+import type {ExternalOption, NullValue, Plugin} from "rollup";
+import type {PostCodeModify} from "./IPostCodeModify";
 
 export interface IExternalByInputArg {
 	current: string
@@ -27,24 +22,5 @@ export interface IDefineItemArg extends IDefineArg {
 	addPlugins?: Plugin[]
 	formatInput?: FormatInputFn
 	addExternal?: ExternalOption
-	/**
-	 * 外部依赖函数，根据输入文件路径返回外部依赖选项
-	 * - 此配置如果存在，将接管 `external` 与 `addExternal` 配置
-	 */
 	externalByInput?: ExternalByInputFn
-}
-
-
-export interface IDefineJsArg extends IDefineItemArg {
-	formats?: DefineJsFormat | DefineJsFormat[]
-	esbuild?: Options
-	rawLoader?: IRawLoaderArg
-}
-
-export interface IDefineDtsArg extends IDefineItemArg {
-	exclude?: string | string[]
-	copyMd?: boolean
-	output?: OutputOptions
-	buildPackageJson?: IPackageJsonArg | boolean
-	vueDts?: IVueDtsOptions | boolean
 }
